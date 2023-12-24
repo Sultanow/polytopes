@@ -80,7 +80,7 @@ np.set_printoptions(precision=5, suppress=True)
 # global default absolute tolerance,
 # to enable changing it code w/o passing arguments,
 # so that magic methods can still be used
-ABS_TOL = 0 #1e-7
+ABS_TOL = -1e-7 #1e-7
 
 # inline imports:
 #
