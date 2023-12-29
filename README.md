@@ -14,3 +14,4 @@ vertices = [[-2, 3, 1, -3, 0],
  [-2, -1, -3, 0, 2]]
 ```
 
+The approach is roughly described in this [paper](https://github.com/Sultanow/polytopes/blob/main/doc/2024_Polytopes.pdf) (work in progress).
