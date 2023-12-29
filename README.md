@@ -2,6 +2,8 @@ Five-dimensional polytopes play a role in string theory, especially when they ar
 
 Berglund, He, Heyes, Hirst, Jejjala, and Lukas have demonstrated in their paper ["New Calabi-Yau Manifolds from Genetic Algorithms"](https://arxiv.org/abs/2306.06159) how a genetic approach can be used to identify new reflexive polytopes. The authors have found various polytopes and published their data set on [GitHub](https://github.com/elliheyes/Polytope-Generation/tree/main/Data). We take up this idea and embark on a search for new five-dimensional polytopes.
 
+We mainly use the libraries [numpy](https://numpy.org/), [matplotlib](https://matplotlib.org/), [plotly](https://plotly.com/), [tulip-control/polytope](https://github.com/tulip-control/polytope) and [pycddlib](https://pypi.org/project/pycddlib/).
+
 New polytope (found 2023-12-29) with 7 vertices:
 
 ```python
