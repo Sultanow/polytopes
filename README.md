@@ -17,3 +17,20 @@ vertices = [[-2, 3, 1, -3, 0],
 ```
 
 The approach is roughly described in this [paper](https://github.com/Sultanow/polytopes/blob/main/doc/2024_Polytopes.pdf) (work in progress).
+
+Investigate features of an polytope using Sage
+
+```python
+p = LatticePolytope([(-2,0,1,0,-1), (1,0,1,-1,2), (-1,1,-1,-2,0), (1,-1,0,2,0), (1,0,0,-1,0), (0,0,0,2,-1)])
+p.interior_points()
+p.points()
+p.is_reflexive()
+```
+
+or
+
+```python
+points = [[-2,0,1,0,-1], [1,0,1,-1,2], [-1,1,-1,-2,0], [1,-1,0,2,0], [1,0,0,-1,0], [0,0,0,2,-1]]
+poly = Polyhedron(points)
+poly.Hrepresentation()
+```
