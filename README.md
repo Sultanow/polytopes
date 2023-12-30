@@ -6,6 +6,8 @@ Berglund, He, Heyes, Hirst, Jejjala, and Lukas have demonstrated in their paper 
 
 We mainly use the libraries [numpy](https://numpy.org/), [matplotlib](https://matplotlib.org/), [plotly](https://plotly.com/), [tulip-control/polytope](https://github.com/tulip-control/polytope) and [pycddlib](https://pypi.org/project/pycddlib/).
 
+# New results
+
 New polytope (found 2023-12-29) with 7 vertices:
 
 ```python
