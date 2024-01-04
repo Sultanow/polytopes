@@ -30,16 +30,19 @@ class Population:
             self.copy_prev_Generation_chrom_list = copy.deepcopy(self.all_generations[curr_generation_number].get_chrom_list())
             self.copy_prev_Generation_chrom_list = self.copy_prev_Generation_chrom_list[:int(len(self.copy_prev_Generation_chrom_list)/2)]
             parents = []
-            while len(self.copy_prev_Generation_chrom_list) < len(self.all_generations[0].get_chrom_list()):
+            while len(self.copy_prev_Generation_chrom_list) < number_of_generations: #len(self.all_generations[0].get_chrom_list()):
+                print(len(self.copy_prev_Generation_chrom_list))
                 parents = random.sample(self.copy_prev_Generation_chrom_list, 2)
-                
+                print("null")
                 crossover_chromosom = Chromosom.apply_crossover(parents[0], parents[1], crossover_type)
-                
+                #print("eins")
                 if crossover_chromosom.get_is_valid():
                     self.copy_prev_Generation_chrom_list.append(crossover_chromosom)
+                    #print("zwei")
                 
             self.copy_prev_Generation_chrom_list.sort(key=lambda x: x.fitness, reverse=True)
             self.all_generations.append(Generation(self.copy_prev_Generation_chrom_list, num_points_per_polytope, num_chroms_per_Generation, num_dimensions, min_value_per_point, max_value_per_point))
+
 
     def get_all_generations(self):
         return self.all_generations
@@ -126,26 +129,30 @@ class Chromosom:
         #print(Generation.num_dimensions)
         self.is_valid = False
 
-
+        print("before try")
         #result = None
         #while result is None:
         try:
+            print("in try")
             internal_points = []
             #print("###############################################")
             Chromosom.chrom_count = Chromosom.chrom_count + 1
             #print(Chromosom.chrom_count)
             
             self.gen_list = chromosome_polytope_points
+            print("before fitness")
             self.fitness = self.calc_fitness(chromosome_polytope_points)
             #print(True)
             self.is_valid = True
-
+            print("after fitness")
             if self.fitness == 0: 
+                print("in if")
                 print(True)
                 polytope_volume = ConvexHull(chromosome_polytope_points).volume #qhull(chromosome_polytope_points).volume
                 Chromosom.reflexive_politopes[polytope_volume] = ConvexHull(self.gen_list)
             #result = 1
         except:
+            (print("except"))
             self.is_valid = False
     
     def get_is_valid(self):
@@ -189,11 +196,16 @@ class Chromosom:
         return b
 
     def calc_fitness(self, vertices):
-        
+        print("in fitness 1")
+        print(qhull(vertices))
         integral_points = enumerate_integral_points(qhull(vertices))
+        print("1")
         integral_points = integral_points.transpose()
+        print("2")
         integral_points = integral_points.astype(int)
+        print("3")
         ip_count = len(integral_points)
+        print("in fitness 2")
         #print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         #print(np.array(vertices))
         distances = self.compute_distances(np.array(vertices))
@@ -206,7 +218,7 @@ class Chromosom:
         return result
 
     def apply_crossover(chromosom_1, chromosom_2, crossover_type):
-        #print("crossover")
+        print("crossover")
         if chromosom_1.get_fitness() > chromosom_2.get_fitness():
             chromosom_1_points = chromosom_1.get_gen_list()
             chromosom_2_points = chromosom_2.get_gen_list()
@@ -215,7 +227,7 @@ class Chromosom:
             chromosom_1_points = chromosom_2.get_gen_list()
         
         crossover_type = crossover_type
-
+        print("crossover 1")
         new_chromosom_gen_list = []
         if crossover_type == 1:
             
@@ -225,7 +237,7 @@ class Chromosom:
             else:
                 length_new_chromosom = len(chromosom_2_points)
                 random_crossover_point = random.randint(1,len(chromosom_2_points)-1)
-
+            print("crossover 2")
             #new_gen = []
             for i in range(0,length_new_chromosom):
                 
@@ -244,28 +256,26 @@ class Chromosom:
                 else:
                     new_chromosom_gen_list.append(random.sample(range(Generation.min_value_per_point, Generation.max_value_per_point), Generation.num_dimensions))
                     #print("random_gen_test")
-
+            print("crossover 3")
+        print(new_chromosom_gen_list)
         new_chromosom = Chromosom(np.array(new_chromosom_gen_list))
-
+        print("crossover 4")
         return new_chromosom
     
 
-def main():
+#def main():
     
-    number_of_generations = 100
-    survival_rate = None
-    crossover_type = 1
-    crossover_parent_choosing_type = None
-    chrom_list = None
-    num_points_per_polytope = 7
-    num_chroms_per_Generation = 50
-    num_dimensions = 5
-    min_value_per_point = -5
-    max_value_per_point = 5
+number_of_generations = 100
+survival_rate = None
+crossover_type = 1
+crossover_parent_choosing_type = None
+chrom_list = None
+num_points_per_polytope = 7
+num_chroms_per_Generation = 50
+num_dimensions = 5
+min_value_per_point = -5
+max_value_per_point = 5
 
-    test_population = Population(number_of_generations, survival_rate, crossover_type, crossover_parent_choosing_type, chrom_list, num_points_per_polytope, num_chroms_per_Generation, num_dimensions, min_value_per_point, max_value_per_point)
+test_population = Population(number_of_generations, survival_rate, crossover_type, crossover_parent_choosing_type, chrom_list, num_points_per_polytope, num_chroms_per_Generation, num_dimensions, min_value_per_point, max_value_per_point)
 
 
-    if __name__ == "__main__":
-        main()
-    

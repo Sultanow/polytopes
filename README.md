@@ -18,6 +18,18 @@ vertices = [[-2, 3, 1, -3, 0],
  [-2, -1, -3, 0, 2]]
 ```
 
+New polytope (found 2023-12-31) with 7 vertices:
+
+```python
+vertices = [[4, -2, 3, 2, -3],
+ [1, -2, -1, 2, 0],
+ [4, -4, 1, 2, -2],
+ [1, 2, 3, 0, -1],
+ [-3, 3, -1, -2, 2],
+ [1, 2, 3, -3, -1],
+ [-2, -4, -5, 2, 1]]
+```
+
 # Paper
 The approach is roughly described in this [paper](https://github.com/Sultanow/polytopes/blob/main/doc/2024_Polytopes.pdf) (work in progress).
 
