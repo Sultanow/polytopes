@@ -33,7 +33,7 @@ vertices = [[4, -2, 3, 2, -3],
 New polytope (found 2024-01-10) with 9 vertices:
 
 ```python
-vertices = vertices = [[-2, 0, 0, 1, -1],
+vertices = [[-2, 0, 0, 1, -1],
  [ 1,  0,  0, -2, -2,],
  [ 0,  0,  0,  1,  1,],
  [-2, -1,  0, -2, -1,],
