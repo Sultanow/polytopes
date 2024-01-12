@@ -30,6 +30,20 @@ vertices = [[4, -2, 3, 2, -3],
  [-2, -4, -5, 2, 1]]
 ```
 
+New polytope (found 2024-01-10) with 9 vertices:
+
+```python
+vertices = vertices = [[-2, 0, 0, 1, -1],
+ [ 1,  0,  0, -2, -2,],
+ [ 0,  0,  0,  1,  1,],
+ [-2, -1,  0, -2, -1,],
+ [-3,  2, -1,  5, -2,],
+ [ 1,  0,  0, -1,  0,],
+ [ 0, -1,  1,  1,  3,],
+ [ 6, -1,  1, -5,  1,],
+ [-12, 2, -2,  7, -7,]]
+```
+
 # Paper
 The approach is roughly described in this [paper](https://github.com/Sultanow/polytopes/blob/main/doc/2024_Polytopes.pdf) (work in progress).
 
