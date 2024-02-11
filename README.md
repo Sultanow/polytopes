@@ -45,7 +45,7 @@ vertices = [[-2, 0, 0, 1, -1],
 ```
 
 # Paper
-The approach is roughly described in this [paper](https://github.com/Sultanow/polytopes/blob/main/doc/2024_Polytopes.pdf) (work in progress).
+The approach is roughly described in this [paper](https://sultanow.de/misc/mathematics/polytopes/quest-for-5d-polytopes-using-a-genetic-algorithm.pdf) (work in progress).
 
 # Investigate features of a polytope using Sage
 
