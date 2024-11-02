@@ -2316,7 +2316,7 @@ def _get_patch(poly1, **kwargs):
     angle = angle * corr
     ind = np.argsort(angle)
     # create patch
-    patch = mpl.patches.Polygon(V[ind, :], True, **kwargs)
+    patch = mpl.patches.Polygon(V[ind, :], closed=True, **kwargs)
     patch.set_zorder(0)
     return patch
 
