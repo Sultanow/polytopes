@@ -19,7 +19,7 @@ CFLAGS ?= -O3 -g -W -Wall
 # these in a variable makes it easy to loop through them. Likewise,
 # the list of dimensions (POLY_Dmax) that we want to build executables
 # for.
-PROGRAMS = poly class cws nef mori GA
+PROGRAMS = poly class cws nef mori
 DIMENSIONS = 4 5 6 11
 
 # The "all" target builds only the 6d-optimized versions that have
@@ -107,7 +107,6 @@ MoriCone-$(2)d.o:      Rat.h Mori.h Global.h
 SingularInput-$(2)d.o: Mori.h Global.h
 
 poly-$(2)d.o:          LG.h Global.h
-GA.o:									 LG.h Global.h Rat.h
 class-$(2)d.o:         Subpoly.h Global.h
 cws-$(2)d.o:           LG.h Rat.h Global.h
 nef-$(2)d.o:           Nef.h LG.h Global.h

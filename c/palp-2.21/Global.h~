@@ -606,7 +606,3 @@ int QuickAnalysis(PolyPointList *_P, BaHo *_BH, FaceInfo *_FI);
 /*
 Fast computation of FaceInfo and Hodge numbers.
 */
-
-
-
-
