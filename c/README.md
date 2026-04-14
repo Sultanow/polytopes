@@ -16,6 +16,11 @@ apt install -y -V libarrow-dev libarrow-glib-dev
 
 Install GNU Debugger via `apt install gbd`.
 
+Arrow files are located in:
+** /root/data/calabi-yau-data___polytopes-4d/hf_cache_home/datasets/calabi-yau-data___polytopes-4d/default/0.0.0/60c0e119a03608418df538191f65da3f43b5b819/ **
+
+
+
 ### Compile
 Compile the project via:
 
