@@ -25,8 +25,6 @@ Compile the project via:
 ```console
 make -f Makefile clean
 make -f Makefile
-make -f Makefile collect_ws5.x
-make -f Makefile build_cws_all_min.x
 ```
 ### Run
 Run `collect_ws5` via:
