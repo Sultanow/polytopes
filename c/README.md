@@ -23,8 +23,6 @@ The command `ls -l /root/data/calabi-yau-data___polytopes-4d/hf_cache_home/datas
 _polytopes-4d/default/0.0.0/60c0e119a03608418df538191f65da3f43b5b819/
 total 161019080` should yield (excerpt):
 
-File Size (MB)  | File Name
------------------------------------------------------------
       0.01 MB     | dataset_info.json
     591.71 MB     | polytopes-4d-full-00000-of-00237.arrow
     619.61 MB     | polytopes-4d-full-00001-of-00237.arrow
