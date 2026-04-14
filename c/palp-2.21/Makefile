@@ -1,4 +1,4 @@
-# 				M A K E  F I L E
+# M A K E  F I L E
 
 #   main programs:	  class.c  cws.c  poly.c  nef.c  mori.c
 
@@ -14,42 +14,79 @@ NEF_OBJ= $(NEF_SRC:.c=.o)
 MORI_SRC= Moricone.c
 MORI_OBJ= $(MORI_SRC:.c=.o)
 
-CC=cc 
+# Compiler
+CC=cc
+CXX=g++
 
-CFLAGS=-O3 -fast
-# CFLAGS=-O3 -g				      # add -g for GNU debugger gdb
-# CFLAGS=-Ofast -O3 -mips4 -n32		      # SGI / 32 bit
-# CFLAGS=-Ofast -O3 -mips4 -64                # SGI / 64 bit
-# CFLAGS=-O3 -fast -non_shared -arch pca56    # statically linked for alpha_PC
+# Flags
+CFLAGS=-g -O0 -D POLY_Dmax=5
+CXXFLAGS=-g -O0 -std=c++17 -D POLY_Dmax=5
+
+# Arrow (ggf. anpassen!)
+ARROW_INC=-I/usr/include
+ARROW_LIB=-L/usr/lib -larrow
 
 #   targets : dependencies ; command
-#             command
-#             ...
 
-all:	poly class cws nef
+all: poly class cws nef collect_ws5.x build_cws_all_min.x
 
-clean:	;	rm -f *.o
+clean:
+	rm -f *.o
 
-cleanall: ;	rm -f *.o *.x core
+cleanall:
+	rm -f *.o *.x core
 
+
+# ========================
+# PALP ORIGINAL TARGETS
+# ========================
 
 poly:	poly.o  $(OBJECTS) LG.o  Global.h LG.h
-	$(CC)   $(CFLAGS) -o  poly.x  poly.o  $(OBJECTS) LG.o
+	$(CC) $(CFLAGS) -o poly.x poly.o $(OBJECTS) LG.o
 
 class:	class.o $(OBJECTS) $(CLASS_OBJ) Global.h Subpoly.h
-	$(CC)   $(CFLAGS) -o class.x  class.o $(OBJECTS) $(CLASS_OBJ)
+	$(CC) $(CFLAGS) -o class.x class.o $(OBJECTS) $(CLASS_OBJ)
 
 cws:    cws.o   $(OBJECTS) LG.o Global.h LG.h
-	$(CC)   $(CFLAGS) -o cws.x  cws.o $(OBJECTS) LG.o
+	$(CC) $(CFLAGS) -o cws.x cws.o $(OBJECTS) LG.o
 
 nef:    nef.o   $(OBJECTS) $(NEF_OBJ) Global.h 
-	$(CC)   $(CFLAGS) -o  nef.x  nef.o  $(OBJECTS) $(NEF_OBJ)
-	
-mori:   mori.o $(OBJECTS) $(MORI_OBJ) Global.h $(CC)   $(CFLAGS) -o  mori.x  mori.o  $(OBJECTS) $(MORI_OBJ)
+	$(CC) $(CFLAGS) -o nef.x nef.o $(OBJECTS) $(NEF_OBJ)
 
+mori:   mori.o $(OBJECTS) $(MORI_OBJ) Global.h
+	$(CC) $(CFLAGS) -o mori.x mori.o $(OBJECTS) $(MORI_OBJ)
 
+# ========================
+# ARROW BRIDGE
+# ========================
 
-#			     D E P E N D E N C I E S
+arrow_bridge.o:   arrow_bridge.cc arrow_bridge.h
+	$(CXX) $(CXXFLAGS) $(ARROW_INC) -c arrow_bridge.cc
+
+# ========================
+# Collect Normalized 5-Weight Systems
+# ========================
+
+collect_ws5.o: collect_ws5.c
+	$(CC) $(CFLAGS) -c collect_ws5.c
+
+collect_ws5.x: collect_ws5.o arrow_bridge.o $(OBJECTS) $(CLASS_OBJ) LG.o
+	$(CXX) $(CXXFLAGS) -o collect_ws5.x \
+	collect_ws5.o arrow_bridge.o \
+	$(OBJECTS) $(CLASS_OBJ) LG.o \
+	$(ARROW_LIB)
+
+# ========================
+# Build minimal CWS
+# ========================
+CWS_OBJS = Coord.o Rat.o Vertex.o Polynf.o Subpoly.o Subadd.o Subdb.o LG.o
+
+build_cws_all_min.x: build_cws_all_min.o $(CWS_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(ARROW_LIB)
+
+# ========================
+# DEPENDENCIES
+# ========================
 
 Coord.o:        Global.h Rat.h 
 Polynf.o:	Global.h Rat.h
@@ -68,14 +105,3 @@ class.o:	Global.h Subpoly.h
 cws.o:		Global.h LG.h Rat.h
 nef.o:          Global.h Nef.h LG.h
 mori.o:     Global.h Rat.h LG.h
-
-
-#	experimental stuff ...
-
-#mori:	mori.o  $(OBJECTS) Global.h
-#	$(CC)   $(CFLAGS) -o  mori.x  mori.o  $(OBJECTS)
-#
-#mori.o: mori.c	Global.h
-#
-#lgo:	lgotwist.c
-#	$(CC)   $(CFLAGS) -o lgo.x lgotwist.c
