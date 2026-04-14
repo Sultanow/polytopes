@@ -26,7 +26,7 @@ Compile the project via:
 make -f Makefile clean
 make -f Makefile
 make -f Makefile collect_ws5.x
-make -f Makefile build_cws553_min.x
+make -f Makefile build_cws_all_min.x
 ```
 ### Run
 Run `collect_ws5` via:
@@ -42,10 +42,10 @@ The arguments are:
 * argv[3] = maximum number of rows read
 * argv[4] = Filer `vertex_count` (optional)
 
-Run `build_cws553_min` via:
+Run `build_cws_all_min` via:
 
 ```console
-./build_cws553_min.x ws5.txt cws553_min.txt 200000
+./build_cws_all_min.x ws5.txt cws_min.txt 50000
 ```
 
 ### Debug
@@ -56,10 +56,10 @@ gdb --args ./collect_ws5.x /root/data/calabi-yau-data___polytopes-4d/hf_cache_ho
 run
 ```
 
-Debug `build_cws553_min` via:
+Debug `build_cws_all_min` via:
 
 ```console
-gdb --args ./build_cws553_min.x ws5.txt cws553_min.txt 200000
+gdb --args ./build_cws_all_min.x ws5.txt cws_min.txt 200000
 run
 ```
 
@@ -69,5 +69,5 @@ run
 make -f Makefile clean
 make -f Makefile
 ./collect_ws5.x /root/data/calabi-yau-data___polytopes-4d/hf_cache_home/datasets/calabi-yau-data___polytopes-4d/default/0.0.0/60c0e119a03608418df538191f65da3f43b5b819/ ws5.txt 5000 14
-./build_cws553_min.x ws5.txt cws553_min.txt 200000
+./build_cws_all_min.x ws5.txt cws_min.txt 200000
 ```
