@@ -62,3 +62,12 @@ Debug `build_cws553_min` via:
 gdb --args ./build_cws553_min.x ws5.txt cws553_min.txt 200000
 run
 ```
+
+### All in one quick go
+
+```console
+make -f Makefile clean
+make -f Makefile
+./collect_ws5.x /root/data/calabi-yau-data___polytopes-4d/hf_cache_home/datasets/calabi-yau-data___polytopes-4d/default/0.0.0/60c0e119a03608418df538191f65da3f43b5b819/ ws5.txt 5000 14
+./build_cws553_min.x ws5.txt cws553_min.txt 200000
+```
