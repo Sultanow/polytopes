@@ -83,5 +83,16 @@ make -f Makefile
 ### Run
 Create the file `~/data/w5_6d.ip` containing the 5D Single Weights via `./cws.x -w6 1 500 -r > ~/data/w5_6d.ip`.
 
+The arguments are:
+- `-w6` — generate IP weight systems with exactly **6 weights** per system, which correspond to single weight systems for **5-dimensional** polytopes (since a 5D simplex has 6 vertices, i.e. `N = dim + 1 = 6`)
+- `1 500` — scan degrees from **1 to 500** (the highest degree occurring in 5D reflexive single weight systems is below 500, analogous to the 4D case)
+- `-r` — keep only **reflexive** weight systems, i.e. those whose associated Newton polytope is reflexive; this pre-filters the list and keeps the file size manageable
+
 Then run `./cws.x -c5 ~/data/w5.ip ~/data/w5_6d.ip > cws55_reflexive_minimal.txt` to generate the 5D CWS.
 
+The arguments are:
+- `-c5` — generate **combined weight systems for 5-dimensional** polytopes; unlike `-c4` and below (which are fully self-contained), `-c5` requires two external weight files as input
+- `~/data/w5.ip` — the **4D weight file** (N=5 weights per line, format `d w1 w2 w3 w4 w5`), used as the building block for the lower-dimensional components of combined weight systems; downloaded from the Kreuzer website
+- `~/data/w5_6d.ip` — the **5D weight file** generated in the previous step (N=6 weights per line, format `d w1 w2 w3 w4 w5 w6`), used for the 5-dimensional simplex components
+
+The program iterates over all geometrically distinct combination types (11 two-weight-system types, around 25 three-weight-system types, and the five-fold product `2×2×2×2×2`) building candidate CWS for each pair or triple of input weights, and outputs only those that are *reflexive and minimal*.
