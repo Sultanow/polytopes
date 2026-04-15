@@ -5,6 +5,7 @@
 FILE *inFILE, *outFILE;
 
 #define	Only_IP_CWS 			1
+#define  Only_Ref_Min_CWS 1
 #define TRANS_INFO_FOR_IP_WEIGHTS 	0
 
 #define NFmax  10			/* maximal number of WS-files */
@@ -496,8 +497,20 @@ void Init_IP_CWS(int narg, char* fn[])
      if(!IsDigit(c[0])){ puts("-c must be followed by a number");exit(0);}
      if(POLY_Dmax<(d=atoi(c))){printf("Increase POLY_Dmax to %d\n",d);exit(0);}
      if(++n<narg) if((fn[n][0]=='-')&&(fn[n][1]=='n')) nop=1;
-     if(nop) Make_IP_CWS(narg,fn); else if(d<=4) Make_34_CWS(d); else Die(
-       "`-c#' has to be followed by `-n' and the weight file names for dim>4");
+
+     if(nop) Make_IP_CWS(narg,fn);
+     else if(d<=4) Make_34_CWS(d);
+     else if(d==5) {
+        if(n+2 >= narg || fn[n+1][0]=='-' || fn[n+2][0]=='-')
+            Die("-c5 braucht zwei Dateipfade: cws.x -c5 /data/w5.ip /data/w6.ip");
+        FILE *w5F = fopen(fn[n+1], "r");
+        FILE *w6F = fopen(fn[n+2], "r");
+        if(!w5F) { printf("Kann nicht oeffnen: %s\n", fn[n+1]); exit(0); }
+        if(!w6F) { printf("Kann nicht oeffnen: %s\n", fn[n+2]); exit(0); }
+        Make_5_CWS(w5F, w6F);
+        fclose(w5F); fclose(w6F);
+     }
+     else Die("`-c#' fuer dim>5 nicht implementiert");
 }
 
 /*  ==========             ALL  IP  WEIGHTS  in  d <= 4     	==========  */
@@ -1026,6 +1039,20 @@ void STtmp(FILE *w2FILE, FILE *w3FILE, FILE *w4FILE)
   rewind(w2FILE); rewind(w3FILE); rewind(w4FILE);
 }
 
+static void STtmp5(FILE *w2F, FILE *w3F, FILE *w4F)
+{
+    int i, j;
+    /* w2, w3, w4 identisch zu STtmp() */
+    fprintf(w2F, "%d  ", W2.d);
+    for (j=0;j<2;j++) fprintf(w2F,"%d ",W2.w[j]);
+    fprintf(w2F,"\n");
+    for (i=0;i<3;i++){fprintf(w3F,"%d  ",W3[i].d);
+        for(j=0;j<3;j++)fprintf(w3F,"%d ",W3[i].w[j]);fprintf(w3F,"\n");}
+    for (i=0;i<95;i++){fprintf(w4F,"%d  ",W4[i].d);
+        for(j=0;j<4;j++)fprintf(w4F,"%d ",W4[i].w[j]);fprintf(w4F,"\n");}
+    rewind(w2F); rewind(w3F); rewind(w4F);
+}
+
 void mkold2(char *outfile, FILE *INFILE1, FILE *INFILE2, int u, int ef)
 {
   
@@ -1148,6 +1175,186 @@ void Make_34_CWS(int d)
 /*  ==========          End of  ALL  CWS  in  d <= 4    	==========  */
 
 /*  ==========  	        MAKE CWS d>4               	==========  */
+void Make_5_CWS(FILE *w5FILE_ext, FILE *w6FILE_ext)
+/* w5FILE_ext = ~/data/w5.ip  (4D-Gewichte, N=5) */
+/* w6FILE_ext = ~/data/<deine 5D-Datei> (5D-Gewichte, N=6) */
+{
+    FILE *w2F, *w3F, *w4F;
+    char *outfile = "";
+
+    if((w2F=tmpfile())==NULL) Die("tmpfile w2");
+    if((w3F=tmpfile())==NULL) Die("tmpfile w3");
+    if((w4F=tmpfile())==NULL) Die("tmpfile w4");
+
+    STtmp5(w2F, w3F, w4F);
+
+    /* ============================================================
+      EINZELNE Gewichtssysteme (nw=1, N=6, dim=5)
+      Typ: "6"  (5D-Simplex = w6FILE)
+      -> make55_w5.c verarbeitet diese bereits direkt.
+      Hier trotzdem als CWS ausgeben:
+    ============================================================ */
+    /* Einzel-WS werden von make55_w5.c abgedeckt, 
+      hier nur kombinierte (nw>=2): */
+
+    /* ============================================================
+      ZWEI Gewichtssysteme (nw=2, N_total=7, dim=5)
+      Formel: N1+N2-u = 7
+    ============================================================ */
+
+    /* --- 5D+1D (w6+w2), u=1: "6+2_u1" --- */
+    mkold2(outfile, w6FILE_ext, w2F, /*u=*/1, /*ef=*/0);
+    rewind(w6FILE_ext); rewind(w2F);
+
+    /* --- 4D+1D (w5+w2), u=0: "5+2" --- */
+    mkold2(outfile, w5FILE_ext, w2F, 0, 0);
+    rewind(w5FILE_ext); rewind(w2F);
+
+    /* --- 3D+2D (w4+w3), u=0: "4+3" --- */
+    mkold2(outfile, w4F, w3F, 0, 0);
+    rewind(w4F); rewind(w3F);
+
+    /* --- 4D+2D (w5+w3), u=1: "5+3_u1" --- */
+    mkold2(outfile, w5FILE_ext, w3F, 1, 0);
+    rewind(w5FILE_ext); rewind(w3F);
+
+    /* --- 3D+3D (w4+w4), u=1, ef=1: "4+4_u1" --- */
+    mkold2(outfile, w4F, w4F, 1, 1);
+    rewind(w4F);
+
+    /* --- 4D+3D (w5+w4), u=2: "5+4_uu2" --- */
+    mkold2(outfile, w5FILE_ext, w4F, 2, 0);
+    rewind(w5FILE_ext); rewind(w4F);
+
+    /* --- 4D+4D (w5+w5), u=3, ef=1: "5+5_uuu3" --- */
+    mkold2(outfile, w5FILE_ext, w5FILE_ext, 3, 1);
+    rewind(w5FILE_ext);
+
+    /* --- 5D+2D (w6+w3), u=2: "6+3_uu2" --- */
+    mkold2(outfile, w6FILE_ext, w3F, 2, 0);
+    rewind(w6FILE_ext); rewind(w3F);
+
+    /* --- 5D+3D (w6+w4), u=3: "6+4_uuu3" --- */
+    mkold2(outfile, w6FILE_ext, w4F, 3, 0);
+    rewind(w6FILE_ext); rewind(w4F);
+
+    /* --- 5D+4D (w6+w5), u=4: "6+5_u4" --- */
+    mkold2(outfile, w6FILE_ext, w5FILE_ext, 4, 0);
+    rewind(w6FILE_ext); rewind(w5FILE_ext);
+
+    /* --- 5D+5D (w6+w6), u=5, ef=1: "6+6_u5" --- */
+    mkold2(outfile, w6FILE_ext, w6FILE_ext, 5, 1);
+    rewind(w6FILE_ext);
+
+    /* ============================================================
+      DREI Gewichtssysteme – nno-Typen (nw=3, N_total=8, dim=5)
+      nno(W0,W1,W2,u): W0 und W1 teilen u Koordinaten, W2 disjunkt
+      Formel: N0+N1+N2-u = 8
+    ============================================================ */
+
+    /* --- nno(4,2,2,u=0): "4x2x2" = 3D+1D+1D disjunkt --- */
+    mkold_nno(outfile, w4F, w2F, w2F, 0, 0);
+    rewind(w4F); rewind(w2F);
+
+    /* --- nno(4,3,2,u=1): "4u3x2" = [3D+2D_u1]+1D --- */
+    mkold_nno(outfile, w4F, w3F, w2F, 1, 0);
+    rewind(w4F); rewind(w3F); rewind(w2F);
+
+    /* --- nno(3,3,2,u=0): "3x3x2" = 2D+2D+1D disjunkt --- */
+    mkold_nno(outfile, w3F, w3F, w2F, 0, /*ef_01=*/1);
+    rewind(w3F); rewind(w2F);
+
+    /* --- nno(4,4,2,u=2): "4u4x2" = [3D+3D_u2]+1D --- */
+    mkold_nno(outfile, w4F, w4F, w2F, 2, 1);
+    rewind(w4F); rewind(w2F);
+
+    /* --- nno(5,2,2,u=1): "5u2x2" = [4D+1D_u1]+1D --- */
+    mkold_nno(outfile, w5FILE_ext, w2F, w2F, 1, 0);
+    rewind(w5FILE_ext); rewind(w2F);
+
+    /* --- nno(5,3,2,u=2): "5u3x2" = [4D+2D_u2]+1D --- */
+    mkold_nno(outfile, w5FILE_ext, w3F, w2F, 2, 0);
+    rewind(w5FILE_ext); rewind(w3F); rewind(w2F);
+
+    /* --- nno(5,4,2,u=3): "5u4x2" = [4D+3D_u3]+1D --- */
+    mkold_nno(outfile, w5FILE_ext, w4F, w2F, 3, 0);
+    rewind(w5FILE_ext); rewind(w4F); rewind(w2F);
+
+    /* --- nno(5,5,2,u=4): "5u5x2" = [4D+4D_u4]+1D --- */
+    mkold_nno(outfile, w5FILE_ext, w5FILE_ext, w2F, 4, 1);
+    rewind(w5FILE_ext); rewind(w2F);
+
+    /* --- nno(6,2,2,u=2): "6u2x2" = [5D+1D_u2]+1D --- */
+    mkold_nno(outfile, w6FILE_ext, w2F, w2F, 2, 0);
+    rewind(w6FILE_ext); rewind(w2F);
+
+    /* --- nno(6,3,2,u=3): "6u3x2" = [5D+2D_u3]+1D --- */
+    mkold_nno(outfile, w6FILE_ext, w3F, w2F, 3, 0);
+    rewind(w6FILE_ext); rewind(w3F); rewind(w2F);
+
+    /* --- nno(6,4,2,u=4): "6u4x2" = [5D+3D_u4]+1D --- */
+    mkold_nno(outfile, w6FILE_ext, w4F, w2F, 4, 0);
+    rewind(w6FILE_ext); rewind(w4F); rewind(w2F);
+
+    /* --- nno(6,5,2,u=5): "6u5x2" = [5D+4D_u5]+1D --- */
+    mkold_nno(outfile, w6FILE_ext, w5FILE_ext, w2F, 5, 0);
+    rewind(w6FILE_ext); rewind(w5FILE_ext); rewind(w2F);
+
+    /* --- nno(6,6,2,u=6): "6u6x2" = [5D+5D_u6]+1D --- */
+    mkold_nno(outfile, w6FILE_ext, w6FILE_ext, w2F, 6, 1);
+    rewind(w6FILE_ext); rewind(w2F);
+
+    /* ============================================================
+      DREI Gewichtssysteme – chain-Typen / 111-Typen (nw=3)
+      Make_111_CWS(FILES[3], ef[2]): W0-W1-W2 Kette mit je u gemeinsam
+      Formel: N0+N1+N2-2u = 8
+    ============================================================ */
+
+    /* --- chain(4,3,3,u=1): "4u3u3" = 3D-2D-2D Kette --- */
+    { FILE *AF[3] = {w4F, w3F, w3F}; int eq[2] = {0,1};
+      Make_111_CWS(AF, eq); rewind(w4F); rewind(w3F); }
+
+    /* --- chain(4,4,2,u=1): "4u4u2" = 3D-3D-1D Kette --- */
+    { FILE *AF[3] = {w4F, w4F, w2F}; int eq[2] = {1,0};
+      Make_111_CWS(AF, eq); rewind(w4F); rewind(w2F); }
+
+    /* --- chain(4,4,4,u=2): "4uu4uu4" = 3D-3D-3D Kette mit u=2 --- */
+    { FILE *AF[3] = {w4F, w4F, w4F}; int eq[2] = {1,1};
+      Make_222_CWS(AF, eq); rewind(w4F); }
+
+    /* --- chain(5,3,2,u=1): "5u3u2" = 4D-2D-1D Kette --- */
+    { FILE *AF[3] = {w5FILE_ext, w3F, w2F}; int eq[2] = {0,0};
+      Make_111_CWS(AF, eq); rewind(w5FILE_ext); rewind(w3F); rewind(w2F); }
+
+    /* --- chain(5,4,3,u=2): "5uu4uu3" = 4D-3D-2D Kette --- */
+    { FILE *AF[3] = {w5FILE_ext, w4F, w3F}; int eq[2] = {0,0};
+      Make_222_CWS(AF, eq); rewind(w5FILE_ext); rewind(w4F); rewind(w3F); }
+
+    /* --- chain(5,5,2,u=2): "5uu5uu2" = 4D-4D-1D Kette --- */
+    { FILE *AF[3] = {w5FILE_ext, w5FILE_ext, w2F}; int eq[2] = {1,0};
+      Make_222_CWS(AF, eq); rewind(w5FILE_ext); rewind(w2F); }
+
+    /* --- chain(6,2,2,u=1): "6u2u2" = 5D-1D-1D Kette --- */
+    { FILE *AF[3] = {w6FILE_ext, w2F, w2F}; int eq[2] = {0,1};
+      Make_111_CWS(AF, eq); rewind(w6FILE_ext); rewind(w2F); }
+
+    /* --- chain(6,3,3,u=2): "6uu3uu3" = 5D-2D-2D Kette --- */
+    { FILE *AF[3] = {w6FILE_ext, w3F, w3F}; int eq[2] = {0,1};
+      Make_222_CWS(AF, eq); rewind(w6FILE_ext); rewind(w3F); }
+
+    /* --- chain(6,4,2,u=2): "6uu4uu2" = 5D-3D-1D Kette --- */
+    { FILE *AF[3] = {w6FILE_ext, w4F, w2F}; int eq[2] = {0,0};
+      Make_222_CWS(AF, eq); rewind(w6FILE_ext); rewind(w4F); rewind(w2F); }
+
+    /* ============================================================
+      FÜNF Gewichtssysteme – mk2xxx(5)
+      5 x (N=2, 1D-Gewicht), N=10, nw=5, dim=5
+    ============================================================ */
+    mk2xxx(outfile, 5);
+
+    fclose(w2F); fclose(w3F); fclose(w4F);
+    /* w5FILE_ext und w6FILE_ext werden vom Aufrufer geschlossen */
+}
 
 void Print_CWS_Zinfo(CWS *CW);
 void Print_CWS(CWS *_W)
@@ -1238,27 +1445,34 @@ void PRINT_CWS(CWS *CW){
 #else
   {
     PolyPointList *P, *DP; EqList E; VertexNumList V;
-    P = (PolyPointList *) malloc(sizeof(PolyPointList));
-    if (P == NULL) Die("Unable to allocate space for P");
+    P  = (PolyPointList *) malloc(sizeof(PolyPointList));
     DP = (PolyPointList *) malloc(sizeof(PolyPointList));
-    if (DP == NULL) Die("Unable to allocate space for DP");
+    if (P == NULL || DP == NULL) Die("Unable to allocate P or DP");
     CW->index = 1;
     Make_CWS_Points(CW, P);
     if (IP_Check(P,&V,&E)){
-      int r=1,i=-1;
+      int r=1, i=-1;
+      while(r && (++i < E.ne)) if(E.e[i].c != 1) r = 0;  /* r=1: reflexiv */
+#if (Only_Ref_Min_CWS)
+      /* Filterkette: erst reflexiv, dann minimal — spart teure Subpoly-Suche */
+      if (r && Poly_Min_check(P,&V,&E)) {
+        Print_CWS(CW);
+        Make_Dual_Poly(P, &V, &E, DP);
+        fprintf(outFILE," M:%d %d N:%d %d\n", P->np, V.nv, DP->np, E.ne);
+      }
+#else
       Print_CWS(CW);
-      while(r && (++i < E.ne))
-	if(E.e[i].c != 1) r = 0;
       Make_Dual_Poly(P, &V, &E, DP);
-      fprintf(outFILE," M:%d %d",P->np, V.nv);
-      if(r) fprintf(outFILE," N:%d %d",DP->np, E.ne);
-      else  fprintf(outFILE," F:%d N:%d", E.ne,DP->np);
+      fprintf(outFILE," M:%d %d", P->np, V.nv);
+      if(r) fprintf(outFILE," N:%d %d", DP->np, E.ne);
+      else  fprintf(outFILE," F:%d N:%d", E.ne, DP->np);
       assert(IP_Check(DP,&V,&E));
       fprintf(outFILE,"\n");
+#endif
     }
-    free(DP); free(P); 
+    free(DP); free(P);
   }
-#endif  
+#endif
 }
 
 void W_TO_CWS(CWS *CW, Weight *_W, int Nf, int Nr, int Nb, int u)

@@ -19,8 +19,8 @@ CC=cc
 CXX=g++
 
 # Flags
-CFLAGS=-g -O0 -D POLY_Dmax=5
-CXXFLAGS=-g -O0 -std=c++17 -D POLY_Dmax=5
+CFLAGS=-g -O0 -D POLY_Dmax=6
+CXXFLAGS=-g -O0 -std=c++17 -D POLY_Dmax=6
 
 # Arrow (ggf. anpassen!)
 ARROW_INC=-I/usr/include
@@ -28,7 +28,7 @@ ARROW_LIB=-L/usr/lib -larrow
 
 #   targets : dependencies ; command
 
-all: poly class cws nef collect_ws5.x build_cws_all_min.x
+all: poly class cws nef
 
 clean:
 	rm -f *.o
@@ -47,8 +47,8 @@ poly:	poly.o  $(OBJECTS) LG.o  Global.h LG.h
 class:	class.o $(OBJECTS) $(CLASS_OBJ) Global.h Subpoly.h
 	$(CC) $(CFLAGS) -o class.x class.o $(OBJECTS) $(CLASS_OBJ)
 
-cws:    cws.o   $(OBJECTS) LG.o Global.h LG.h
-	$(CC) $(CFLAGS) -o cws.x cws.o $(OBJECTS) LG.o
+cws:    cws.o $(OBJECTS) $(CLASS_OBJ) LG.o Global.h LG.h Subpoly.h
+	$(CC) $(CFLAGS) -o cws.x cws.o $(OBJECTS) $(CLASS_OBJ) LG.o
 
 nef:    nef.o   $(OBJECTS) $(NEF_OBJ) Global.h 
 	$(CC) $(CFLAGS) -o nef.x nef.o $(OBJECTS) $(NEF_OBJ)
@@ -77,14 +77,6 @@ collect_ws5.x: collect_ws5.o arrow_bridge.o $(OBJECTS) $(CLASS_OBJ) LG.o
 	$(ARROW_LIB)
 
 # ========================
-# Build minimal CWS
-# ========================
-CWS_OBJS = Coord.o Rat.o Vertex.o Polynf.o Subpoly.o Subadd.o Subdb.o LG.o
-
-build_cws_all_min.x: build_cws_all_min.o $(CWS_OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(ARROW_LIB)
-
-# ========================
 # DEPENDENCIES
 # ========================
 
@@ -102,6 +94,7 @@ Nefpart.o:	Global.h Nef.h
 
 poly.o:         Global.h LG.h
 class.o:	Global.h Subpoly.h
-cws.o:		Global.h LG.h Rat.h
+cws.o:		Global.h LG.h Rat.h Subpoly.h
+cws_core5.o:	Global.h LG.h Rat.h Subpoly.h
 nef.o:          Global.h Nef.h LG.h
 mori.o:     Global.h Rat.h LG.h
