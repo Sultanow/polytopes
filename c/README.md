@@ -5,6 +5,17 @@
 ### Prerequisites
 
 #### Libraries and Tools
+Install `PALP`:
+
+```console
+apt install make build-essential
+mkdir ~/palp
+cd ~/palp/
+wget http://hep.itp.tuwien.ac.at/~kreuzer/CY/palp/palp-2.21.tar.gz
+cd palp-2.21/
+make
+```
+
 Install `libarrow` (using `sudo`):
 
 ```console
