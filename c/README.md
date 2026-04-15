@@ -3,6 +3,8 @@
 ## Extending PALP
 
 ### Prerequisites
+
+#### Libraries and Tools
 Install `libarrow` (using `sudo`):
 
 ```console
@@ -15,6 +17,8 @@ apt install -y -V libarrow-dev libarrow-glib-dev
 ```
 
 Install GNU Debugger via `apt install gbd`.
+
+#### Data
 
 Arrow files are located in:
 `/root/data/calabi-yau-data___polytopes-4d/hf_cache_home/datasets/calabi-yau-data___polytopes-4d/default/0.0.0/60c0e119a03608418df538191f65da3f43b5b819/`
@@ -39,6 +43,34 @@ total 161019080` should yield (excerpt):
     666.48 MB     | polytopes-4d-full-00012-of-00237.arrow
     519.92 MB     | polytopes-4d-full-00013-of-00237.arrow
     519.92 MB     | polytopes-4d-full-00014-of-00237.arrow
+
+4D Single Weights are located in `~/data/w5.ip`. Download and unzip them via
+
+```console
+cd ~/data
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w5.ip.gz
+gunzip w5.ip.gz
+```
+
+The content should look as follows (excerpt):
+
+    5 1 1 1 1 1
+    6 1 1 1 1 2
+    7 1 1 1 2 2
+    7 1 1 1 1 3
+    8 1 1 2 2 2
+    8 1 1 1 2 3
+    8 1 1 1 1 4
+    9 1 1 2 2 3
+    9 1 1 1 3 3
+    9 1 1 1 2 4
+    10 1 2 2 2 3
+    10 1 1 2 3 3
+    10 1 1 2 2 4
+    10 1 1 1 3 4
+    10 1 1 1 2 5
+    11 1 2 2 3 3
+    11 1 1 2 3 4
 
 ### Compile
 Compile the project via:
