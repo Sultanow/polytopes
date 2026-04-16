@@ -70,7 +70,7 @@ wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w33.ip
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w333.ip
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/wK3.ip
 
-cat w5.ip w44.ip w34.ip w33.ip w333.ip wK3.ip > ~/data/cws4.ip
+cat w5.ip w33.ip w44.ip w34.ip w333.ip > ~/data/cws4.ip
 ```
 
 The content should look as follows (excerpt):
