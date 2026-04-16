@@ -92,4 +92,4 @@ Run the program via `./cws.x -c5 ~/data/w5.ip ~/data/cws4.ip ~/data/wK3.ip > cws
 The arguments are:
 
 ### Debug
-Debug the program via `gdb --args ./cws.x -c5 ~/data/w5.ip ~/data/cws4.ip ~/data/wK3.ip > cws55_reflexive_minimal.txt` and the call `run`.
+Run `gdb ./cws.x` and then in gdb call `run -c5 ~/data/w5.ip ~/data/cws4.ip ~/data/wK3.ip`.
