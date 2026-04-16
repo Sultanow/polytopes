@@ -55,12 +55,23 @@ total 161019080` should yield (excerpt):
     519.92 MB     | polytopes-4d-full-00013-of-00237.arrow
     519.92 MB     | polytopes-4d-full-00014-of-00237.arrow
 
-The file `~/data/w5.ip` contains 184,026 4D Single Weights. Download and unzip them via
+We need the files containing Weights. Maximilian Kreuzer and Harald Skarke provide this data. Download, unzip and merge them via
 
 ```console
 cd ~/data
+
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w5.ip.gz
 gunzip w5.ip.gz
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w44.ip.gz
+gunzip w44.ip.gz
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w34.ip.gz
+gunzip w34.ip.gz
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w33.ip
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w333.ip
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/wK3.ip
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/pCY.sm
+
+cat w5.ip w44.ip w34.ip w33.ip w333.ip wK3.ip pCY.sm > ~/data/cws4.ip
 ```
 
 The content should look as follows (excerpt):
