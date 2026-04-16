@@ -87,7 +87,12 @@ make -f Makefile
 ```
 
 ### Run
-Run the program via `./cws.x -c5 ~/data/w5.ip ~/data/cws4.ip ~/data/wK3.ip > cws55_reflexive_minimal.txt`.
+Run the program via:
+
+```console
+ulimit -s unlimited
+./cws.x -c5 ~/data/w5.ip ~/data/cws4.ip ~/data/wK3.ip > cws55_reflexive_minimal.txt
+```
 
 The arguments are:
 
