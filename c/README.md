@@ -80,6 +80,16 @@ cat w5.ip w33.ip w44.ip w34.ip w333.ip > ~/data/cws4.ip
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/wK3.ip
 ```
 
+To extend all existing d=3 and d=4 weight systems to d=5 by appending (1,1) weight rows, we use the following input files, which are structured as follows:
+
+| File | N | nw | dim | after x(1,1) → dim |
+|-------|---|----|-----|-------------------|
+| `w5.ip` | 5 | 1 | 4 | N=7, nw=2, dim=5 ✓ |
+| `w33.ip` | 6 | 2 | 4 | N=8, nw=3, dim=5 ✓ |
+| `w44.ip` | 6 | 2 | 4 | N=8, nw=3, dim=5 ✓ |
+| `w34.ip` | 6 | 2 | 4 | N=8, nw=3, dim=5 ✓ |
+| `w333.ip` | 7 | 3 | 4 | N=9, nw=4, dim=5 ✓ |
+
 ### Compile
 Compile the project via:
 
