@@ -89,7 +89,7 @@ make -f Makefile
 ```
 
 ### Run
-Run the program via:
+First remove the default 8 MB stack size limit for the current shell session via `ulimit -s unlimited`. This is required because `Poly_Min_check` uses a deep mutual recursion between `Find_Ref_Subpoly` and `Find_RSP_Drop_and_Keep`, allocating ~62 KB per recursion level. 5D polytopes with many vertices exceed the default limit and cause a segfault. Then run the program via:
 
 ```console
 ulimit -s unlimited
@@ -97,6 +97,11 @@ ulimit -s unlimited
 ```
 
 The arguments are:
+-c5 — generate combined weight systems for 5-dimensional reflexive polytopes. Unlike -c4 and below (which are self-contained), -c5 requires three external input files.
+~/data/w5.ip — the 4D single weight systems (N=5 weights per line, format d w1 w2 w3 w4 w5), downloaded from the Kreuzer website (w5.ip.gz). Used as building blocks for the non-trivial 2-WS and 3-WS combination types in dimension 5.
+~/data/cws4.ip — all d=4 combined weight systems, produced by merging the Kreuzer files: cat w5.ip w44.ip w34.ip w33.ip w333.ip > cws4.ip. Each entry is extended trivially with one (1,1) weight row to lift from dim=4 to dim=5.
+~/data/wK3.ip — the d=3 K3 weight systems (116 entries), downloaded separately from the Kreuzer website. Each entry is extended twice with (1,1) to lift from dim=3 to dim=5. This file must not be merged into cws4.ip, as that would produce dim=4 instead of dim=5.
+> cws55_reflexive_minimal.txt — output file containing all reflexive minimal 5D CWS, one per line in PALP format with point counts M:p v N:p v appended.
 
 ### Debug
 Run `gdb ./cws.x` and then in gdb call `run -c5 ~/data/w5.ip ~/data/cws4.ip ~/data/wK3.ip`.
