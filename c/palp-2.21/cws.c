@@ -1027,7 +1027,9 @@ void RW_TO_CWS(CWS *, Weight *, int, int, int, int);
 void W_TO_CWS(CWS *, Weight *, int, int, int, int);
 void PRINT_CWS(CWS *);
 void Make_111_CWS(FILE **, int *);
+void Make_222_CWS(FILE **, int *);
 void Make_nno_CWS(FILE **, int, int);
+int  Poly_Min_check(PolyPointList *, VertexNumList *, EqList *);
 
 void STtmp(FILE *w2FILE, FILE *w3FILE, FILE *w4FILE)
 {
