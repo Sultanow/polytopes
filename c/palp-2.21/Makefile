@@ -64,19 +64,6 @@ arrow_bridge.o:   arrow_bridge.cc arrow_bridge.h
 	$(CXX) $(CXXFLAGS) $(ARROW_INC) -c arrow_bridge.cc
 
 # ========================
-# Collect Normalized 5-Weight Systems
-# ========================
-
-collect_ws5.o: collect_ws5.c
-	$(CC) $(CFLAGS) -c collect_ws5.c
-
-collect_ws5.x: collect_ws5.o arrow_bridge.o $(OBJECTS) $(CLASS_OBJ) LG.o
-	$(CXX) $(CXXFLAGS) -o collect_ws5.x \
-	collect_ws5.o arrow_bridge.o \
-	$(OBJECTS) $(CLASS_OBJ) LG.o \
-	$(ARROW_LIB)
-
-# ========================
 # DEPENDENCIES
 # ========================
 
