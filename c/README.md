@@ -31,6 +31,7 @@ Install GNU Debugger via `apt install gbd`.
 
 #### Data
 
+##### Arrow files (not yet needed)
 Arrow files are located in:
 `/root/data/calabi-yau-data___polytopes-4d/hf_cache_home/datasets/calabi-yau-data___polytopes-4d/default/0.0.0/60c0e119a03608418df538191f65da3f43b5b819/`
 
@@ -55,6 +56,7 @@ total 161019080` should yield (excerpt):
     519.92 MB     | polytopes-4d-full-00013-of-00237.arrow
     519.92 MB     | polytopes-4d-full-00014-of-00237.arrow
 
+##### Weight files (strictly required)
 We need the files containing Weights. Maximilian Kreuzer and Harald Skarke provide this data. Download, unzip and merge them via
 
 ```console
