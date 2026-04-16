@@ -62,13 +62,16 @@ cd ~/data
 
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w5.ip.gz
 gunzip w5.ip.gz
+
+wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w33.ip
+
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w44.ip.gz
 gunzip w44.ip.gz
+
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w34.ip.gz
 gunzip w34.ip.gz
-wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w33.ip
+
 wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/w333.ip
-wget http://hep.itp.tuwien.ac.at/%7Ekreuzer/CY/W/wK3.ip
 
 cat w5.ip w33.ip w44.ip w34.ip w333.ip > ~/data/cws4.ip
 ```
