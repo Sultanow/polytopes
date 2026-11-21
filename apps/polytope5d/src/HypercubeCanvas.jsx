@@ -1,10 +1,48 @@
 import { useEffect, useRef } from 'react';
 import { edges as cubeEdges, projectVertex, vertices as cubeVertices } from './geometry.js';
 
+const DRAG_SENSITIVITY = 0.008; // radians per pointer pixel
+const MAX_PITCH = Math.PI / 2 - 0.02;
+
 export default function HypercubeCanvas({ playing, geometry = null }) {
   const canvasRef = useRef(null);
   const playingRef = useRef(playing);
+  const orbitRef = useRef({ yaw: 0, pitch: 0 });
+  const dragRef = useRef(null);
   playingRef.current = playing;
+
+  function onPointerDown(event) {
+    // Left mouse button or primary touch/pen only.
+    if (event.button !== 0 || dragRef.current !== null) return;
+    event.preventDefault();
+    dragRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.style.cursor = 'grabbing';
+  }
+
+  function onPointerMove(event) {
+    const drag = dragRef.current;
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    drag.x = event.clientX;
+    drag.y = event.clientY;
+    orbitRef.current.yaw += dx * DRAG_SENSITIVITY;
+    orbitRef.current.pitch = Math.max(
+      -MAX_PITCH,
+      Math.min(MAX_PITCH, orbitRef.current.pitch + dy * DRAG_SENSITIVITY),
+    );
+  }
+
+  function onPointerEnd(event) {
+    const drag = dragRef.current;
+    if (!drag || drag.id !== event.pointerId) return;
+    dragRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    event.currentTarget.style.cursor = 'grab';
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,11 +70,14 @@ export default function HypercubeCanvas({ playing, geometry = null }) {
       if (previousTime === 0) previousTime = timestamp;
       const delta = Math.min((timestamp - previousTime) / 1000, 0.1);
       previousTime = timestamp;
-      if (playingRef.current && !reducedMotion) time += delta;
+      // Auto rotation pauses while the user is dragging.
+      if (playingRef.current && dragRef.current === null && !reducedMotion) time += delta;
 
       context.clearRect(0, 0, width, height);
-      const positions = vertices.map((point) => projectVertex(point, time, width, height));
-      const sortedEdges = edges.map(([a, b]) => ({ a, b, depth: (positions[a].depth + positions[b].depth) / 2 }))
+      const view = orbitRef.current;
+      const positions = vertices.map(point => projectVertex(point, time, width, height, view));
+      const sortedEdges = edges
+        .map(([a, b]) => ({ a, b, depth: (positions[a].depth + positions[b].depth) / 2 }))
         .sort((left, right) => left.depth - right.depth);
 
       for (const edge of sortedEdges) {
@@ -72,5 +113,18 @@ export default function HypercubeCanvas({ playing, geometry = null }) {
     };
   }, [geometry]);
 
-  return <canvas ref={canvasRef} className="geometry-canvas" role="img" aria-label="Animated two-dimensional projection of a five-dimensional lattice polytope" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="geometry-canvas"
+      style={{ cursor: 'grab', touchAction: 'none' }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+      onLostPointerCapture={onPointerEnd}
+      role="img"
+      aria-label="Interactive 2D projection of a five-dimensional polytope. Drag to rotate the 3D view."
+    />
+  );
 }

@@ -11,6 +11,10 @@ services:
       - "8080"
     networks:
       - n8n-net
+      - app-net
+    depends_on:
+      api:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=n8n-net"
@@ -47,6 +51,29 @@ services:
       retries: 3
       start_period: 10s
 
+  api:
+    build:
+      context: ./api
+    container_name: polytope5d-api
+    restart: unless-stopped
+    environment:
+      POLYTOPE_DB: /data/polytopes.sqlite3
+    volumes:
+      - polytope5d-index:/data
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 networks:
   n8n-net:
     external: true
+  app-net:
+    internal: true
+
+volumes:
+  polytope5d-index:

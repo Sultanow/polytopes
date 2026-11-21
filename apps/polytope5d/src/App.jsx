@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import HypercubeCanvas from './HypercubeCanvas.jsx';
+import CatalogueSearch from './CatalogueSearch.jsx';
+import './catalogue.css';
 import { findReflexiveSimplices, inspectSimplexWeights, toProjectionGeometry } from './simplexSearch.js';
 
 const articleUrl = 'https://www.mdpi.com/2673-9909/6/11/194';
@@ -41,7 +43,7 @@ export default function App() {
           <span className="brand-mark">M<span className="brand-dot">.</span></span>
           <span>mathematics<span className="muted">.art</span></span>
         </a>
-        <span className="header-tag"><span className="live-dot" /> RESEARCH PREVIEW · V0.2</span>
+        <span className="header-tag"><span className="live-dot" /> RESEARCH PREVIEW · V0.3</span>
       </header>
 
       <main className="main-content">
@@ -99,6 +101,7 @@ export default function App() {
           </div>
           <p className="search-scope">Research scope: the published classification covers Newton polytopes from length-six single weight systems, not all 5D reflexive polytopes. This demo enumerates only a small simplex subfamily, without canonical GL(5,ℤ) deduplication.</p>
         </section>
+        <CatalogueSearch />
       </main>
       <footer className="site-footer"><span>© mathematics.art · Polytope5D</span><a href={articleUrl} target="_blank" rel="noreferrer">Research paper ↗</a></footer>
     </div>

@@ -1,0 +1,1 @@
+{"id":"example-only-5d-simplex","source":"example_only_not_catalogue","dimension":5,"reflexive":true,"weights":[1,1,1,1,1,1],"vertex_count":6,"facet_count":6,"vertices_5d":[[-1,-1,-1,-1,-1],[1,0,0,0,0],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]],"info":{"note":"Hand-constructed format example, not a published catalogue row"}}

@@ -33,14 +33,14 @@ foreach ($file in $files) {
 }
 
 # Altes Projektmaterial NUR im eigenen Verzeichnis entfernen, nicht bei KMDL.
-& ssh @sshOptions $Server "rm -rf '$RemoteBase/src' '$RemoteBase/public'"
+& ssh @sshOptions $Server "rm -rf '$RemoteBase/src' '$RemoteBase/public' '$RemoteBase/api'"
 Check-Exit "Bereinigung der Projektquellen fehlgeschlagen"
-foreach ($folder in @("src", "public")) {
+foreach ($folder in @("src", "public", "api")) {
     & scp @sshOptions -r (Join-Path $ProjectRoot $folder) "${Server}:${RemoteBase}/"
     Check-Exit "Upload fehlgeschlagen: $folder"
 }
 
-Write-Host "[3/5] Baue und starte ausschliesslich Polytope5D..." -ForegroundColor Cyan
+Write-Host "[3/5] Baue und starte ausschliesslich Polytope5D und seine API..." -ForegroundColor Cyan
 & ssh @sshOptions $Server "cd '$RemoteBase' && docker compose up -d --build --wait"
 Check-Exit "Docker-Deployment fehlgeschlagen"
 
