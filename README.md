@@ -1,67 +1,40 @@
-# Quick overview
-Five-dimensional polytopes play a role in string theory, especially when they are reflexive. It is not trivial to find reflexive polytopes and there exists genetic approaches to finding them. We are implementing a genetic algorithm in Python and search for 5D polytope.
+# Polytopes — research, algorithms, and interactive explorers
 
-Berglund, He, Heyes, Hirst, Jejjala, and Lukas have demonstrated in their paper ["New Calabi-Yau Manifolds from Genetic Algorithms"](https://arxiv.org/abs/2306.06159) how a genetic approach can be used to identify new reflexive polytopes. The authors have found various polytopes and published their data set on [GitHub](https://github.com/elliheyes/Polytope-Generation/tree/main/Data). We take up this idea and embark on a search for new five-dimensional polytopes.
+Research code and interactive tools for lattice polytopes, especially five-dimensional reflexive polytopes.
 
-We mainly use the libraries [numpy](https://numpy.org/), [matplotlib](https://matplotlib.org/), [plotly](https://plotly.com/), [tulip-control/polytope](https://github.com/tulip-control/polytope) and [pycddlib](https://pypi.org/project/pycddlib/).
+## Repository map
 
-# New results
-New polytope (found 2023-12-29) with 7 vertices:
+| Path | Purpose |
+| --- | --- |
+| [`fundamentals/`](fundamentals/) | Preserved research sources and experiments: C, Python, plots, data, docs, and original README. The code and its Git history are retained. |
+| [`apps/polytope5d/`](apps/polytope5d/) | Polytope5D browser explorer (React/Vite, Docker, Traefik). |
 
-```python
-vertices = [[-2, 3, 1, -3, 0],
- [1, -2, -1, 2, 0],
- [4, -4, 1, 2, -2],
- [1, 2, 3, 0, -1],
- [-3, 3, -1, -2, 2],
- [1, 2, 3, -3, -1],
- [-2, -1, -3, 0, 2]]
+The original README, including the previous genetic-algorithm results and examples, is preserved at [`fundamentals/README.md`](fundamentals/README.md).
+
+## Polytope5D
+
+A standalone web explorer with an animated 5D projection and an exact but **restricted** demonstrator for reflexive five-dimensional lattice simplices.
+
+```bash
+cd apps/polytope5d
+npm install
+npm test
+npm run dev
 ```
 
-New polytope (found 2023-12-31) with 7 vertices:
+For production, use `apps/polytope5d/deploy.ps1` or `docker compose up -d --build` inside that directory. It uses the existing external Docker network `n8n-net`.
 
-```python
-vertices = [[4, -2, 3, 2, -3],
- [1, -2, -1, 2, 0],
- [4, -4, 1, 2, -2],
- [1, 2, 3, 0, -1],
- [-3, 3, -1, -2, 2],
- [1, 2, 3, -3, -1],
- [-2, -4, -5, 2, 1]]
-```
+## Research context
 
-New polytope (found 2024-01-10) with 9 vertices:
+**Hatziiliou, Sultanow and Amir (2026)**, *Classification of Five-Dimensional Reflexive Polytopes Arising from Single Weight Systems*, AppliedMath 6(11), 194. https://doi.org/10.3390/appliedmath6110194
 
-```python
-vertices = [[-2, 0, 0, 1, -1],
- [ 1,  0,  0, -2, -2,],
- [ 0,  0,  0,  1,  1,],
- [-2, -1,  0, -2, -1,],
- [-3,  2, -1,  5, -2,],
- [ 1,  0,  0, -1,  0,],
- [ 0, -1,  1,  1,  3,],
- [ 6, -1,  1, -5,  1,],
- [-12, 2, -2,  7, -7,]]
-```
+The article classifies Newton polytopes arising from the length-six **single weight system sector**. It does not enumerate combined weight systems or reflexive subpolytopes and does not claim an exhaustive classification of all 5D reflexive polytopes.
 
-# Investigate features of a polytope using Sage
+## Development roadmap
 
-```python
-p = LatticePolytope([(-2,0,1,0,-1), (1,0,1,-1,2), (-1,1,-1,-2,0), (1,-1,0,2,0), (1,0,0,-1,0), (0,0,0,2,-1)])
-p.interior_points()
-p.points()
-p.is_reflexive()
-```
+1. **v0.2** — 5D preview and bounded exact reflexive-simplex search (implemented, browser-only).
+2. **v0.3** — JSON schema for canonical vertices, facets, invariants, and provenance; Three.js/WebGL-based manipulation of genuine 5D geometry projections.
+3. **v0.4** — FastAPI service and a small index backed by a *documented and licensed* sample of the published catalogue.
+4. **v1.0** — Scalable indexed lookup, queue-backed heavyweight jobs, cited provenance, and download/citation per result. Never load the entire multi-billion-record catalogue into a single browser or request.
 
-or
-
-```python
-points = [[-2,0,1,0,-1], [1,0,1,-1,2], [-1,1,-1,-2,0], [1,-1,0,2,0], [1,0,0,-1,0], [0,0,0,2,-1]]
-poly = Polyhedron(points)
-poly.Hrepresentation()
-```
-How to make cdd run (part of the fitness function):
-
-pip install pycddlib
-
-python-cdd or just cdd cause errors
+**Migration note:** Paths inside legacy scripts may have assumed they were executed from the repository root. The move preserves files unchanged; adjust working directories when running older tools.

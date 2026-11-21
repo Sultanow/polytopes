@@ -1,0 +1,52 @@
+name: polytope5d
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: polytope5d-web
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - n8n-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=n8n-net"
+
+      # Hauptadresse: https://polytope5d.mathematics.art/
+      - "traefik.http.routers.polytope5d-subdomain.rule=Host(`polytope5d.mathematics.art`)"
+      - "traefik.http.routers.polytope5d-subdomain.entrypoints=websecure"
+      - "traefik.http.routers.polytope5d-subdomain.tls=true"
+      - "traefik.http.routers.polytope5d-subdomain.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.polytope5d-subdomain.service=polytope5d"
+
+      # Zweite Adresse: https://mathematics.art/polytope5d/
+      # Achtung: Wildcard-DNS *.mathematics.art deckt den Apex mathematics.art NICHT ab.
+      - "traefik.http.routers.polytope5d-path.rule=Host(`mathematics.art`) && (Path(`/polytope5d`) || PathPrefix(`/polytope5d/`))"
+      - "traefik.http.routers.polytope5d-path.entrypoints=websecure"
+      - "traefik.http.routers.polytope5d-path.tls=true"
+      - "traefik.http.routers.polytope5d-path.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.polytope5d-path.priority=2000"
+      - "traefik.http.routers.polytope5d-path.service=polytope5d"
+
+      # Nur die eigenen URLs von HTTP auf HTTPS umleiten.
+      - "traefik.http.routers.polytope5d-http.rule=Host(`polytope5d.mathematics.art`) || (Host(`mathematics.art`) && (Path(`/polytope5d`) || PathPrefix(`/polytope5d/`)))"
+      - "traefik.http.routers.polytope5d-http.entrypoints=web"
+      - "traefik.http.routers.polytope5d-http.priority=2000"
+      - "traefik.http.routers.polytope5d-http.middlewares=polytope5d-https"
+      - "traefik.http.routers.polytope5d-http.service=polytope5d"
+      - "traefik.http.middlewares.polytope5d-https.redirectscheme.scheme=https"
+
+      - "traefik.http.services.polytope5d.loadbalancer.server.port=8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  n8n-net:
+    external: true
