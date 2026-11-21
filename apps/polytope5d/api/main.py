@@ -3,20 +3,21 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Query
 from .db import connect, deserialize, init_db
+from .duality import enrich_detail
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
     yield
 
-app=FastAPI(title="Polytope5D Search API", version="0.3.0", lifespan=lifespan,
+app=FastAPI(title="Polytope5D Search API", version="0.5.0", lifespan=lifespan,
     docs_url=None, redoc_url=None, openapi_url=None)
 
 @app.get("/api/healthz")
 def health():
     with connect() as con:
         con.execute("SELECT 1").fetchone()
-    return {"ok": True, "version":"0.3.0"}
+    return {"ok": True, "version":"0.5.0"}
 
 @app.get("/api/stats")
 def stats():
@@ -75,4 +76,4 @@ def detail(polytope_id: str):
         r=con.execute("SELECT * FROM polytopes WHERE id=?",(polytope_id,)).fetchone()
     if r is None:
         raise HTTPException(status_code=404,detail="Not found")
-    return deserialize(r)
+    return enrich_detail(deserialize(r))

@@ -9,11 +9,17 @@ const DRAG_SENSITIVITY = 0.008;
 const MAX_PITCH = Math.PI / 2 - 0.02;
 const PLANE_BY_ID = Object.fromEntries(fiveDPlanes.map(plane => [plane.id, plane]));
 
-export default function HypercubeCanvas({ playing = true, geometry = null }) {
+// Optional shared controller lets two independent viewers rotate in lockstep.
+// Internal controller remains the default, so hero and existing previews are unchanged.
+export default function HypercubeCanvas({ playing = true, geometry = null, controller = null, showVectors = false, tint = 'cyan' }) {
   const canvasRef = useRef(null);
   const playingRef = useRef(playing);
-  const orbitRef = useRef({ yaw: 0, pitch: 0 });
-  const orientationRef = useRef(identity5D());
+  const localControllerRef = useRef(null);
+  if (!localControllerRef.current) {
+    localControllerRef.current = { orbit: { yaw: 0, pitch: 0 }, orientation: identity5D() };
+  }
+  const activeControllerRef = useRef(null);
+  activeControllerRef.current = controller ?? localControllerRef.current;
   const dragRef = useRef(null);
   const [mode, setMode] = useState('orbit');
   const [horizontalPlane, setHorizontalPlane] = useState('0-3');
@@ -21,16 +27,16 @@ export default function HypercubeCanvas({ playing = true, geometry = null }) {
   playingRef.current = playing;
 
   function resetView() {
-    orbitRef.current = { yaw: 0, pitch: 0 };
-    orientationRef.current = identity5D();
+    activeControllerRef.current.orbit = { yaw: 0, pitch: 0 };
+    activeControllerRef.current.orientation = identity5D();
   }
 
   function handleRotation(dx, dy) {
     if (mode === 'orbit') {
-      orbitRef.current.yaw += dx * DRAG_SENSITIVITY;
-      orbitRef.current.pitch = Math.max(
+      activeControllerRef.current.orbit.yaw += dx * DRAG_SENSITIVITY;
+      activeControllerRef.current.orbit.pitch = Math.max(
         -MAX_PITCH,
-        Math.min(MAX_PITCH, orbitRef.current.pitch + dy * DRAG_SENSITIVITY),
+        Math.min(MAX_PITCH, activeControllerRef.current.orbit.pitch + dy * DRAG_SENSITIVITY),
       );
       return;
     }
@@ -38,8 +44,8 @@ export default function HypercubeCanvas({ playing = true, geometry = null }) {
     // R^5 coordinate planes. The orthogonal matrix accumulates the rotations.
     const h = PLANE_BY_ID[horizontalPlane];
     const v = PLANE_BY_ID[verticalPlane];
-    if (dx) rotate5D(orientationRef.current, h.a, h.b, dx * DRAG_SENSITIVITY);
-    if (dy) rotate5D(orientationRef.current, v.a, v.b, dy * DRAG_SENSITIVITY);
+    if (dx) rotate5D(activeControllerRef.current.orientation, h.a, h.b, dx * DRAG_SENSITIVITY);
+    if (dy) rotate5D(activeControllerRef.current.orientation, v.a, v.b, dy * DRAG_SENSITIVITY);
   }
 
   function onPointerDown(event) {
@@ -107,12 +113,25 @@ export default function HypercubeCanvas({ playing = true, geometry = null }) {
       if (playingRef.current && dragRef.current === null && !reducedMotion) time += delta;
 
       context.clearRect(0, 0, width, height);
-      const view = orbitRef.current;
-      const orientation = orientationRef.current;
+      const view = activeControllerRef.current.orbit;
+      const orientation = activeControllerRef.current.orientation;
       const positions = vertices.map(point => projectVertex(point, time, width, height, view, orientation));
       const sortedEdges = edges
         .map(([a, b]) => ({ a, b, depth: (positions[a].depth + positions[b].depth) / 2 }))
         .sort((left, right) => left.depth - right.depth);
+
+      if (showVectors) {
+        // In the dual panel each radius is a (scaled) primitive primal facet normal.
+        const origin = projectVertex([0, 0, 0, 0, 0], time, width, height, view, orientation);
+        for (const end of positions) {
+          context.beginPath();
+          context.moveTo(origin.x, origin.y);
+          context.lineTo(end.x, end.y);
+          context.strokeStyle = 'rgba(252, 191, 104, 0.55)';
+          context.lineWidth = 1.15;
+          context.stroke();
+        }
+      }
 
       for (const edge of sortedEdges) {
         const start = positions[edge.a];
@@ -121,7 +140,9 @@ export default function HypercubeCanvas({ playing = true, geometry = null }) {
         context.beginPath();
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
-        context.strokeStyle = `rgba(112, 220, 246, ${Math.max(0.16, Math.min(opacity, 0.77))})`;
+        context.strokeStyle = tint === 'violet'
+          ? `rgba(181, 146, 255, ${Math.max(0.16, Math.min(opacity, 0.77))})`
+          : `rgba(112, 220, 246, ${Math.max(0.16, Math.min(opacity, 0.77))})`;
         context.lineWidth = 1.1;
         context.stroke();
       }
@@ -130,7 +151,7 @@ export default function HypercubeCanvas({ playing = true, geometry = null }) {
         const radius = 1.5 + (depth + 2) * 0.24;
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
-        context.fillStyle = '#dbfbff';
+        context.fillStyle = tint === 'violet' ? '#eee4ff' : '#dbfbff';
         context.fill();
       });
       animationFrame = window.requestAnimationFrame(render);
@@ -145,7 +166,7 @@ export default function HypercubeCanvas({ playing = true, geometry = null }) {
       window.cancelAnimationFrame(animationFrame);
       observer.disconnect();
     };
-  }, [geometry]);
+  }, [geometry, showVectors, tint]);
 
   return (
     <div className="dimension-viewer">

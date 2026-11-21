@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import HypercubeCanvas from './HypercubeCanvas.jsx';
+import DualPolytopeView from './DualPolytopeView.jsx';
 
 // Relative URL works on both polytope5d.mathematics.art/ and mathematics.art/polytope5d/.
 function api(path) { return new URL(`./api/${path}`, document.baseURI).toString(); }
@@ -79,7 +80,7 @@ export default function CatalogueSearch() {
   const isDemoOnly = sources.length > 0 && sources.every(s => s.source === 'analytic_demo');
 
   return <section id="catalogue-lab" className="catalogue-lab" aria-labelledby="catalogue-title">
-    <p className="small-label">02 / SEARCH API · V0.3</p>
+    <p className="small-label">02 / SEARCH API · V0.5</p>
     <h2 id="catalogue-title">Browse the indexed sample.</h2>
     <p className="catalogue-intro">Query a real SQLite index via FastAPI. The initial {isDemoOnly ? '69' : 'local'} examples are <strong>analytically constructed demonstrations</strong>, not records from the published multi-billion-polytope classification. A curated catalogue excerpt can be imported separately.</p>
     <form className="catalogue-form" onSubmit={e => { e.preventDefault(); search(params); }}>
@@ -123,14 +124,17 @@ export default function CatalogueSearch() {
             <span>Facets <b>{selected.facet_count ?? '—'}</b></span><span>Points <b>{selected.point_count ?? '—'}</b></span>
             <span>Reflexive <b>{selected.reflexive ? 'Yes' : 'No'}</b></span><span>Frequency <b>{selected.frequency ?? '—'}</b></span>
           </div>
-          {geometry ? <div className="catalogue-preview">
+          {geometry && !selected.dual_available ? <div className="catalogue-preview">
             <HypercubeCanvas playing geometry={geometry}/>
             <span>{selected.edges ? `Exact stored graph: ${selected.edges.length} edges` : 'Only stored vertices; no edge graph provided'}</span>
-          </div> : <p>No 5D vertex coordinates in this record. Metadata is searchable; a geometric reconstruction would require additional catalogue data.</p>}
+          </div> : selected.dual_available
+            ? <p>Exact polar geometry is available below in the side-by-side Dual View.</p>
+            : <p>{geometry ? 'No independently verified polar dual for this imported record. Original coordinates can still be inspected in the single preview.' : 'No 5D vertex coordinates in this record. Metadata is searchable; a geometric reconstruction would require additional catalogue data.'}</p>}
           <details className="simplex-details"><summary>Inspect complete JSON record</summary><pre>{JSON.stringify(selected,null,2)}</pre></details>
         </>}
       </div>
     </div>
+    {selected?.dual_available && <DualPolytopeView key={selected.id} record={selected} />}
     <p className="search-scope">This is a staging search index, <strong>not</strong> the published catalogue. Records from an actual catalogue subset must retain their source, stable ID, and exact coordinates where available. Similar metadata does not establish GL(5,ℤ)-equivalence.</p>
   </section>;
 }
