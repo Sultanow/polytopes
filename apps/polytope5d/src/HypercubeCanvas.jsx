@@ -1,18 +1,48 @@
-import { useEffect, useRef } from 'react';
-import { edges as cubeEdges, projectVertex, vertices as cubeVertices } from './geometry.js';
+import { useEffect, useRef, useState } from 'react';
+import {
+  edges as cubeEdges, fiveDPlanes, identity5D, projectVertex,
+  rotate5D, vertices as cubeVertices,
+} from './geometry.js';
+import './viewer5d.css';
 
-const DRAG_SENSITIVITY = 0.008; // radians per pointer pixel
+const DRAG_SENSITIVITY = 0.008;
 const MAX_PITCH = Math.PI / 2 - 0.02;
+const PLANE_BY_ID = Object.fromEntries(fiveDPlanes.map(plane => [plane.id, plane]));
 
-export default function HypercubeCanvas({ playing, geometry = null }) {
+export default function HypercubeCanvas({ playing = true, geometry = null }) {
   const canvasRef = useRef(null);
   const playingRef = useRef(playing);
   const orbitRef = useRef({ yaw: 0, pitch: 0 });
+  const orientationRef = useRef(identity5D());
   const dragRef = useRef(null);
+  const [mode, setMode] = useState('orbit');
+  const [horizontalPlane, setHorizontalPlane] = useState('0-3');
+  const [verticalPlane, setVerticalPlane] = useState('1-4');
   playingRef.current = playing;
 
+  function resetView() {
+    orbitRef.current = { yaw: 0, pitch: 0 };
+    orientationRef.current = identity5D();
+  }
+
+  function handleRotation(dx, dy) {
+    if (mode === 'orbit') {
+      orbitRef.current.yaw += dx * DRAG_SENSITIVITY;
+      orbitRef.current.pitch = Math.max(
+        -MAX_PITCH,
+        Math.min(MAX_PITCH, orbitRef.current.pitch + dy * DRAG_SENSITIVITY),
+      );
+      return;
+    }
+    // In genuine 5D mode, horizontal and vertical motion rotate in separate
+    // R^5 coordinate planes. The orthogonal matrix accumulates the rotations.
+    const h = PLANE_BY_ID[horizontalPlane];
+    const v = PLANE_BY_ID[verticalPlane];
+    if (dx) rotate5D(orientationRef.current, h.a, h.b, dx * DRAG_SENSITIVITY);
+    if (dy) rotate5D(orientationRef.current, v.a, v.b, dy * DRAG_SENSITIVITY);
+  }
+
   function onPointerDown(event) {
-    // Left mouse button or primary touch/pen only.
     if (event.button !== 0 || dragRef.current !== null) return;
     event.preventDefault();
     dragRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -27,11 +57,7 @@ export default function HypercubeCanvas({ playing, geometry = null }) {
     const dy = event.clientY - drag.y;
     drag.x = event.clientX;
     drag.y = event.clientY;
-    orbitRef.current.yaw += dx * DRAG_SENSITIVITY;
-    orbitRef.current.pitch = Math.max(
-      -MAX_PITCH,
-      Math.min(MAX_PITCH, orbitRef.current.pitch + dy * DRAG_SENSITIVITY),
-    );
+    handleRotation(dx, dy);
   }
 
   function onPointerEnd(event) {
@@ -42,6 +68,14 @@ export default function HypercubeCanvas({ playing, geometry = null }) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     event.currentTarget.style.cursor = 'grab';
+  }
+
+  function onKeyDown(event) {
+    const movements = { ArrowLeft: [-12, 0], ArrowRight: [12, 0], ArrowUp: [0, -12], ArrowDown: [0, 12] };
+    const delta = movements[event.key];
+    if (!delta) return;
+    event.preventDefault();
+    handleRotation(...delta);
   }
 
   useEffect(() => {
@@ -70,12 +104,12 @@ export default function HypercubeCanvas({ playing, geometry = null }) {
       if (previousTime === 0) previousTime = timestamp;
       const delta = Math.min((timestamp - previousTime) / 1000, 0.1);
       previousTime = timestamp;
-      // Auto rotation pauses while the user is dragging.
       if (playingRef.current && dragRef.current === null && !reducedMotion) time += delta;
 
       context.clearRect(0, 0, width, height);
       const view = orbitRef.current;
-      const positions = vertices.map(point => projectVertex(point, time, width, height, view));
+      const orientation = orientationRef.current;
+      const positions = vertices.map(point => projectVertex(point, time, width, height, view, orientation));
       const sortedEdges = edges
         .map(([a, b]) => ({ a, b, depth: (positions[a].depth + positions[b].depth) / 2 }))
         .sort((left, right) => left.depth - right.depth);
@@ -114,17 +148,44 @@ export default function HypercubeCanvas({ playing, geometry = null }) {
   }, [geometry]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="geometry-canvas"
-      style={{ cursor: 'grab', touchAction: 'none' }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerEnd}
-      onPointerCancel={onPointerEnd}
-      onLostPointerCapture={onPointerEnd}
-      role="img"
-      aria-label="Interactive 2D projection of a five-dimensional polytope. Drag to rotate the 3D view."
-    />
+    <div className="dimension-viewer">
+      <div className="dimension-tools" aria-label="Rotation controls">
+        <div className="dimension-mode" role="group" aria-label="Rotation mode">
+          <button type="button" className={mode === 'orbit' ? 'active' : ''} aria-pressed={mode === 'orbit'} onClick={() => setMode('orbit')}>3D view</button>
+          <button type="button" className={mode === '5d' ? 'active' : ''} aria-pressed={mode === '5d'} onClick={() => setMode('5d')}>True 5D</button>
+        </div>
+        {mode === '5d' && <div className="dimension-plane-controls">
+          <label>↔
+            <span className="sr-only-5d">Horizontal rotation plane</span>
+            <select aria-label="Horizontal 5D rotation plane" value={horizontalPlane} onChange={e => setHorizontalPlane(e.target.value)}>
+              {fiveDPlanes.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
+            </select>
+          </label>
+          <label>↕
+            <span className="sr-only-5d">Vertical rotation plane</span>
+            <select aria-label="Vertical 5D rotation plane" value={verticalPlane} onChange={e => setVerticalPlane(e.target.value)}>
+              {fiveDPlanes.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
+            </select>
+          </label>
+        </div>}
+        <button className="dimension-reset" type="button" onClick={resetView} title="Reset both the 3D camera and the 5D orientation">Reset</button>
+      </div>
+      <canvas
+        ref={canvasRef}
+        className="geometry-canvas"
+        style={{ cursor: 'grab', touchAction: 'none' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
+        onLostPointerCapture={onPointerEnd}
+        onKeyDown={onKeyDown}
+        tabIndex={0}
+        role="img"
+        aria-label={mode === '5d'
+          ? '5D polytope projection. Drag horizontally or vertically in the selected five-dimensional rotation planes, or use arrow keys.'
+          : '5D polytope projection. Drag to orbit the 3D camera, or use arrow keys.'}
+      />
+    </div>
   );
 }
