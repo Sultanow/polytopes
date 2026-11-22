@@ -32,8 +32,14 @@ SOURCE_REVISION = _REV or "main"
 REVISION_PINNED = bool(_REV)
 BASE = f"https://huggingface.co/datasets/{SOURCE}/resolve/{SOURCE_REVISION}/"
 
-# Phase 1: bounded, single-shard pilot; no implicit multi-shard scans.
-SUPPORTED_SHARDS = tuple(range(5, 16))
+# The published Hugging Face repository has exactly 30 per-vertex shards:
+# 05..33 and 36, with no 34/35.  This is an explicit, reviewed allow-list,
+# not a filename constructed from arbitrary user input.  No catalogue-wide scan.
+SUPPORTED_SHARDS = (*range(5, 34), 36)
+SHARD_LISTED_AS_OF = "2026-11-22"
+# Require a selective predicate for the largest central shards; small tail
+# shards may be browsed without a second filter.
+FILTER_REQUIRED_SHARDS = tuple(range(10, 25))
 FILTER_NAMES = (
     "facet_count", "point_count", "dual_point_count", "h11", "h12", "euler_characteristic"
 )
@@ -60,7 +66,7 @@ def add_fingerprint(row: dict) -> dict:
 
 def parquet_url(vertex_count: int) -> str:
     if type(vertex_count) is not int or vertex_count not in SUPPORTED_SHARDS:
-        raise ValueError("Choose a vertex count between 5 and 15")
+        raise ValueError("Choose a published 4D Parquet shard: 5–33 or 36 vertices")
     return f"{BASE}polytopes-4d-{vertex_count:02d}-vertices.parquet"
 
 
@@ -199,6 +205,28 @@ def validate_request(vertex_count, **values):
         raise HTTPException(422, str(exc)) from exc
 
 
+@router.get("/shards")
+def remote_shards():
+    """Static source-file manifest.  Does NOT fetch remote metadata or run scans.
+
+    Availability here means *listed in the upstream dataset repository*, not
+    that an individual live HTTP request has just succeeded.
+    """
+    return {
+        "source": SOURCE, "source_revision": SOURCE_REVISION,
+        "source_revision_pinned": REVISION_PINNED,
+        "manifest_verified_date": SHARD_LISTED_AS_OF,
+        "listed_shards": list(SUPPORTED_SHARDS),
+        "listed_shard_count": len(SUPPORTED_SHARDS),
+        "missing_in_numeric_range": [34, 35],
+        "filter_required_shards": list(FILTER_REQUIRED_SHARDS),
+        "lookup_status": "listed_in_repository_not_live_checked",
+        "query_policy": "one selected shard per request; exact counts only on success",
+        "total_classes_reference": 473_800_776,
+        "all_shards_checked_for_current_filters": False,
+    }
+
+
 @router.get("/status")
 def remote_status():
     return {
@@ -206,6 +234,10 @@ def remote_status():
         "source_revision": SOURCE_REVISION, "source_revision_pinned": REVISION_PINNED,
         "deep_links": "content-fingerprint checked; row position is not a mathematical class ID",
         "supported_vertex_counts": list(SUPPORTED_SHARDS),
+        "manifest_listed_shard_count": len(SUPPORTED_SHARDS),
+        "manifest_verified_date": SHARD_LISTED_AS_OF,
+        "filter_required_shards": list(FILTER_REQUIRED_SHARDS),
+        "coverage_endpoint": "/api/4d/remote/shards",
         "single_shard_only": True,
         "dataset_complete": False,
         "count_exact_for_selected_shard_when_successful": True,
@@ -213,13 +245,13 @@ def remote_status():
         "memory_limit": "256MB DuckDB buffer only (not a hard RSS limit)",
         "temporary_spill_limit": "32MB DuckDB temp; extension cache may use separate disk space",
         "network_byte_cap": False,
-        "notice": "Pilot: no multi-shard query and no claim of exhaustive 473.8M-class coverage.",
+        "notice": "30 listed source shards; no multi-shard scan. Each exact count must be requested and verified separately.",
     }
 
 
 @router.get("/search")
 def remote_search(
-    vertex_count: int = Query(..., ge=5, le=15),
+    vertex_count: int = Query(..., ge=5, le=36),
     offset: int = Query(0, ge=0, le=10_000),
     after_row: int | None = Query(None, ge=0, le=100_000_000),
     limit: int = Query(6, ge=1, le=12),
@@ -239,8 +271,8 @@ def remote_search(
     validate_request(vertex_count, **values)
     if after_row is not None and offset:
         raise HTTPException(422, "Use either after_row or offset, not both")
-    if vertex_count >= 10 and all(x is None for x in values.values()):
-        raise HTTPException(422, "For shards with 10+ vertices, specify at least one numeric filter")
+    if vertex_count in FILTER_REQUIRED_SHARDS and all(x is None for x in values.values()):
+        raise HTTPException(422, "For shards with 10–24 vertices, specify at least one numeric filter")
     data = bounded_worker({"mode": "page", "vertex_count": vertex_count,
                            "filters": values, "offset": offset, "after_row": after_row,
                            "limit": limit})
@@ -253,7 +285,7 @@ def remote_search(
 
 @router.get("/count")
 def remote_count(
-    vertex_count: int = Query(..., ge=5, le=15),
+    vertex_count: int = Query(..., ge=5, le=36),
     facet_count: int | None = Query(None, ge=0, le=1_000_000),
     point_count: int | None = Query(None, ge=0, le=1_000_000),
     dual_point_count: int | None = Query(None, ge=0, le=1_000_000),
@@ -265,8 +297,8 @@ def remote_count(
                   dual_point_count=dual_point_count, h11=h11, h12=h12,
                   euler_characteristic=euler_characteristic)
     validate_request(vertex_count, **values)
-    if vertex_count >= 10 and all(x is None for x in values.values()):
-        raise HTTPException(422, "For shards with 10+ vertices, specify at least one numeric filter")
+    if vertex_count in FILTER_REQUIRED_SHARDS and all(x is None for x in values.values()):
+        raise HTTPException(422, "For shards with 10–24 vertices, specify at least one numeric filter")
     data = bounded_worker({"mode": "count", "vertex_count": vertex_count, "filters": values})
     return {**data, "source": SOURCE, "vertex_count": vertex_count,
             "source_revision": SOURCE_REVISION, "source_revision_pinned": REVISION_PINNED,
@@ -275,10 +307,12 @@ def remote_count(
 
 
 @router.get("/row/{vertex_count}/{shard_row}")
-def remote_row(vertex_count: int = ApiPath(..., ge=5, le=15),
+def remote_row(vertex_count: int = ApiPath(..., ge=5, le=36),
                shard_row: int = ApiPath(..., ge=0, le=100_000_000),
                fp: str | None = Query(None, min_length=64, max_length=64),
                rev: str | None = Query(None, min_length=40, max_length=40)):
+    # Avoid wasting a remote worker on 34/35 or other unavailable shards.
+    validate_request(vertex_count)
     if not isinstance(fp, str):
         fp = None
     if not isinstance(rev, str):

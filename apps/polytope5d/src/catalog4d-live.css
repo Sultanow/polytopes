@@ -63,3 +63,33 @@
 /* v0.13: readable, verifiable Parquet deep links */
 .cat4d-provenance{font-size:12px;line-height:1.6;color:#c0dde5;overflow-wrap:anywhere;margin:0 0 16px}
 .cat4d-provenance code{font-size:11px;color:#92e9f7;overflow-wrap:anywhere}
+
+/* v0.14: shard-by-shard completeness (never equate sampled pages with exact counts). */
+.cat4d-search select{width:100%;border:1px solid #456370;background:#101e2a;border-radius:6px;color:#f5feff;padding:12px;font-size:15px}
+.cat4d-coverage{margin:24px 0}
+.cat4d-coverage-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap;margin-bottom:18px}
+.cat4d-coverage-heading h2{margin:0 0 9px}
+.cat4d-coverage-heading p{font-size:13px;color:#b6cbd7;max-width:700px;line-height:1.65;margin:0}
+.cat4d-coverage-summary{background:rgba(22,54,67,.7);border:1px solid #326a7b;border-radius:8px;min-width:138px;padding:12px 16px;display:flex;align-items:flex-start;flex-direction:column;gap:4px}
+.cat4d-coverage-summary strong{font-size:24px;color:#9aebf5}.cat4d-coverage-summary span{font-size:11px;color:#c4dde2}
+.cat4d-coverage-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.cat4d-coverage-shard{min-width:0;padding:12px 9px;text-align:left;color:#d7ebef;border:1px solid #345562;background:rgba(20,43,57,.75);border-radius:8px;cursor:pointer;display:flex;flex-direction:column;gap:7px}
+.cat4d-coverage-shard b{font-size:13px}.cat4d-coverage-shard span{font-size:11px;line-height:1.4;color:#9eb4c0;overflow-wrap:anywhere}
+.cat4d-coverage-shard--sampled{border-color:#538495}.cat4d-coverage-shard--exact{border-color:#4db79e;background:rgba(27,91,76,.3)}
+.cat4d-coverage-shard--exact span{color:#a6ecd1}.cat4d-coverage-shard--failed{border-color:#ba7d62;background:rgba(99,53,39,.24)}
+.cat4d-coverage-shard--failed span{color:#f0b5a5}.cat4d-coverage-shard[aria-pressed="true"]{outline:2px solid #75d8e9;outline-offset:1px}
+.cat4d-coverage-shard:disabled{opacity:.54;cursor:wait}.cat4d-coverage-shard:hover:not(:disabled){background:#19465a}
+.cat4d-coverage-total{font-size:14px;line-height:1.6;color:#a9e4da;border:1px solid #427b70;padding:12px 16px;border-radius:7px;margin-top:18px}
+
+/* Batyrev mirror Hodge invariants, separate from verified dual-vertex geometry. */
+.cat4d-mirror{margin:22px 0;padding:22px;border:1px solid rgba(118,214,224,.32);border-radius:12px;background:linear-gradient(115deg,rgba(31,84,94,.34),rgba(48,37,88,.19))}
+.cat4d-mirror-heading h3{font-size:18px;margin:0 0 8px}.cat4d-mirror-heading p,.cat4d-mirror-foot{font-size:12px;line-height:1.65;color:#c1d7e1;margin:0 0 14px}
+.cat4d-mirror-pair{display:grid;grid-template-columns:1fr 40px 1fr;align-items:center;gap:12px;margin-bottom:12px}
+.cat4d-mirror-side{border:1px solid rgba(125,204,229,.22);border-radius:9px;padding:17px 20px;background:rgba(11,24,41,.52);display:flex;flex-direction:column;gap:8px}
+.cat4d-mirror-side span{font-size:12px;color:#b7d4df}.cat4d-mirror-side strong{font-size:clamp(26px,3.3vw,42px);letter-spacing:-1px;color:#78dfe8}
+.cat4d-mirror-side:last-child strong{color:#c9adff}.cat4d-mirror-side small{font-size:12px;color:#c8d9e1}
+.cat4d-mirror-arrow{text-align:center;font-size:30px;color:#a9c5d8}
+.cat4d-mirror-foot{margin:10px 0 0}
+@media(max-width:1050px){.cat4d-coverage-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:720px){.cat4d-coverage-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.cat4d-mirror-pair{grid-template-columns:1fr}.cat4d-mirror-arrow{font-size:20px}}
+@media(max-width:420px){.cat4d-coverage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

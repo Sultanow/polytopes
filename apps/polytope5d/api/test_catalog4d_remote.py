@@ -11,7 +11,7 @@ from . import catalog4d_remote as r
 class Remote4DTests(TestCase):
     def test_shard_url_cannot_be_user_supplied(self):
         self.assertTrue(r.parquet_url(15).endswith("polytopes-4d-15-vertices.parquet"))
-        for bad in (4, 16, "15", "../x", True):
+        for bad in (4, 34, 35, 37, "15", "../x", True):
             with self.assertRaises(ValueError):
                 r.parquet_url(bad)
 
