@@ -58,6 +58,14 @@ def filters_for_sql(vertex_count: int, values: dict) -> tuple[str, list[int]]:
 
 
 def _duckdb_worker(payload: dict) -> dict:
+    # DuckDB extension installation uses the *process* HOME, which may point
+    # to a nonexistent /home/polytope in the slim API image.  Keep the tiny
+    # httpfs extension cache in the container's ephemeral /tmp, not in /data.
+    # This also works if this function is called directly by an offline test.
+    duckdb_home = os.path.join(tempfile.gettempdir(), "mathematics-art-duckdb-home")
+    os.makedirs(duckdb_home, mode=0o700, exist_ok=True)
+    os.environ["HOME"] = duckdb_home
+
     # Not imported in API parent: only the short-lived child loads DuckDB.
     import duckdb
 
@@ -71,8 +79,14 @@ def _duckdb_worker(payload: dict) -> dict:
             con.execute("SET threads=2")
             con.execute("SET memory_limit='256MB'")
             con.execute("SET max_temp_directory_size='32MB'")
-            con.execute("SET http_timeout=12")
-            con.execute("SET http_retries=0")
+            # Set both: home_directory for the DB instance and HOME for DuckDB's
+            # extension installer (these locations are not interchangeable).
+            con.execute("SET home_directory = '" + duckdb_home.replace("'", "''") + "'")
+            # A local Parquet smoke test must not trigger httpfs auto-install.
+            # Remote queries retain the HTTP timeout/retry restrictions.
+            if url.startswith(("https://", "http://")):
+                con.execute("SET http_timeout=12")
+                con.execute("SET http_retries=0")
             con.execute("SET preserve_insertion_order=false")
             con.execute("SET enable_external_file_cache=false")
             # Prevent disk spill into the API's persistent SQLite volume.

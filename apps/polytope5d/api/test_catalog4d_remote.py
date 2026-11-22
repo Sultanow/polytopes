@@ -75,6 +75,40 @@ class Remote4DTests(TestCase):
         with patch.object(r.subprocess,'run',return_value=child):
             self.assertEqual(r.bounded_worker({'mode':'count'})['count'],21)
 
+    def test_local_parquet_does_not_autoinstall_httpfs(self):
+        import os
+        import sys
+        from types import SimpleNamespace
+        from unittest.mock import MagicMock
+        connection = MagicMock()
+        connection.execute.return_value = connection
+        connection.fetchone.return_value = (3,)
+        with patch.dict(sys.modules, {"duckdb": SimpleNamespace(connect=lambda _: connection)}):
+            with patch.object(r, 'parquet_url', return_value='/tmp/local-test.parquet'):
+                ans = r._duckdb_worker({'mode':'count','vertex_count':5,'filters':{'h11':101}})
+        self.assertEqual(ans['count'], 3)
+        self.assertTrue(os.path.isdir(os.environ['HOME']))
+        statements = [c.args[0] for c in connection.execute.call_args_list]
+        self.assertTrue(any('home_directory' in x for x in statements))
+        self.assertFalse(any('http_timeout' in x or 'http_retries' in x for x in statements))
+
+    def test_remote_parquet_configures_httpfs_after_home(self):
+        import sys
+        from types import SimpleNamespace
+        from unittest.mock import MagicMock
+        connection = MagicMock()
+        connection.execute.return_value = connection
+        connection.fetchone.return_value = (7,)
+        with patch.dict(sys.modules, {"duckdb": SimpleNamespace(connect=lambda _: connection)}):
+            with patch.object(r, 'parquet_url', return_value='https://example.invalid/test.parquet'):
+                ans = r._duckdb_worker({'mode':'count','vertex_count':5,'filters':{'h11':101}})
+        self.assertEqual(ans['count'], 7)
+        statements = [c.args[0] for c in connection.execute.call_args_list]
+        home_i = next(i for i, x in enumerate(statements) if 'SET home_directory' in x)
+        http_i = next(i for i, x in enumerate(statements) if 'SET http_timeout' in x)
+        self.assertLess(home_i, http_i)
+        self.assertTrue(any('SET http_retries=0' in x for x in statements))
+
     def test_source_row_does_not_claim_global_id(self):
         with patch.object(r,'bounded_worker',return_value={'item':{'shard_row':123}}):
             item=r.remote_row(vertex_count=9,shard_row=123)
