@@ -41,14 +41,14 @@ services:
       # mathematics.art landing and its Vite bundle/public assets.
       # Root-only routing served HTML but blocked JS/CSS, leaving a blank page.
       # Do not capture other apex-host paths.
-      - "traefik.http.routers.mathematics-home.rule=Host(`mathematics.art`) && (Path(`/`) || PathPrefix(`/assets/`) || PathPrefix(`/team/`) || Path(`/hero-polytope.png`) || Path(`/polytope.svg`))"
+      - "traefik.http.routers.mathematics-home.rule=Host(`mathematics.art`) && (Path(`/`) || PathPrefix(`/assets/`) || PathPrefix(`/team/`) || PathPrefix(`/brand/`) || Path(`/favicon.ico`) || Path(`/favicon.svg`) || Path(`/apple-touch-icon.png`) || Path(`/site.webmanifest`) || Path(`/icon-192.png`) || Path(`/icon-512.png`) || Path(`/hero-polytope.png`) || Path(`/polytope.svg`))"
       - "traefik.http.routers.mathematics-home.entrypoints=websecure"
       - "traefik.http.routers.mathematics-home.tls=true"
       - "traefik.http.routers.mathematics-home.tls.certresolver=letsencrypt"
       - "traefik.http.routers.mathematics-home.priority=1000"
       - "traefik.http.routers.mathematics-home.service=polytope5d"
 
-      - "traefik.http.routers.mathematics-home-http.rule=Host(`mathematics.art`) && (Path(`/`) || PathPrefix(`/assets/`) || PathPrefix(`/team/`) || Path(`/hero-polytope.png`) || Path(`/polytope.svg`))"
+      - "traefik.http.routers.mathematics-home-http.rule=Host(`mathematics.art`) && (Path(`/`) || PathPrefix(`/assets/`) || PathPrefix(`/team/`) || PathPrefix(`/brand/`) || Path(`/favicon.ico`) || Path(`/favicon.svg`) || Path(`/apple-touch-icon.png`) || Path(`/site.webmanifest`) || Path(`/icon-192.png`) || Path(`/icon-512.png`) || Path(`/hero-polytope.png`) || Path(`/polytope.svg`))"
       - "traefik.http.routers.mathematics-home-http.entrypoints=web"
       - "traefik.http.routers.mathematics-home-http.priority=1000"
       - "traefik.http.routers.mathematics-home-http.middlewares=polytope5d-https"
