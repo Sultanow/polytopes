@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 660" role="img" aria-labelledby="title desc">
+<title id="title">Portrait placeholder for Eldar</title>
+<desc id="desc">Abstract silhouette to be replaced by a real photograph</desc>
+<rect width="600" height="660" fill="#60696a"/>
+<path d="M-50 546L640 180M-20 638L600 310M-30 265L620 -30" stroke="#f1f1ed" stroke-opacity=".1" stroke-width="1"/>
+<circle cx="300" cy="235" r="126" fill="#839090" opacity=".7"/>
+<path d="M96 660C111 469 178 409 300 409S488 470 504 660Z" fill="#839090" opacity=".76"/>
+<circle cx="300" cy="220" r="98" fill="#d8dedb" opacity=".68"/>
+<path d="M114 660C130 490 193 441 300 441S470 492 486 660Z" fill="#c1cfca" opacity=".62"/>
+<rect x="49" y="40" width="502" height="580" rx="2" fill="none" stroke="#e2ebe7" stroke-opacity=".28"/>
+<text x="300" y="595" text-anchor="middle" fill="#f6f4f1" font-family="sans-serif" font-size="15" letter-spacing="5">PHOTO COMING SOON</text>
+</svg>

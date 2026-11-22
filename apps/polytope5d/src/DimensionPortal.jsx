@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import FiveDApp from './App.jsx';
 import Dimension2DExplorer from './Dimension2DExplorer.jsx';
 import NDPreview from './NDPreview.jsx';
+import MathematicsHome from './MathematicsHome.jsx';
 import './portal.css';
 
 const root = 'https://polytopes.mathematics.art';
@@ -28,7 +29,7 @@ function Nav({active}) {
     <div className="portal-navlinks">{['2d','3d','4d','5d','compute'].map(p=><a key={p} className={active===`/${p}`?'current':''} aria-current={active===`/${p}`?'page':undefined} href={`${root}/${p}`}>{p==='compute'?'Compute':p.toUpperCase()}</a>)}</div>
   </nav>;
 }
-function Footer(){return <footer className="portal-footer"><span>Polytopes · mathematics.art</span><a href={paper} rel="noreferrer" target="_blank">5D research paper ↗</a><a href="https://github.com/Sultanow/polytopes" rel="noreferrer" target="_blank">GitHub ↗</a></footer>;}
+function Footer(){return <footer className="portal-footer"><a href="https://mathematics.art/">← Mathematics.art</a><a href={paper} rel="noreferrer" target="_blank">5D research paper ↗</a><a href="https://github.com/Sultanow/polytopes" rel="noreferrer" target="_blank">GitHub ↗</a></footer>;}
 function Home() {
   return <main className="portal-content">
     <div className="portal-overline">AN INTERACTIVE ATLAS OF REFLEXIVE LATTICE POLYTOPES</div>
@@ -62,8 +63,14 @@ function ThirdFourth({dimension}) {
 }
 function Compute(){return <main className="portal-content"><div className="portal-overline">CITIZEN SCIENCE / FUTURE WORK</div><h1>Collaborative<br/><span>compute.</span></h1><p className="portal-lead">A future distributed research workflow where volunteers can contribute verified computational results to classification problems in higher dimensions.</p><section className="portal-pane"><h2>How it could work</h2><div className="portal-process"><span>01 · Assign bounded tasks</span><span>02 · Compute locally</span><span>03 · Upload compact certificates</span><span>04 · Independently verify</span></div><p className="portal-fine">This page is a concept, not an active contribution or job-distribution service. No executable code from volunteers will run on our server without validation and isolation.</p></section></main>}
 export default function DimensionPortal(){
-  const path = legacy() ? '/5d' : route();
-  useEffect(()=>{document.title=path==='/5d'?'Polytope5D | Polytopes mathematics.art':path==='/'?'Polytopes | mathematics.art':`${path.slice(1).toUpperCase()} | Polytopes mathematics.art`;},[path]);
+  // Host-based landing page; one Vite build still serves all dimension routes.
+  const mathematicsHome = window.location.hostname === 'mathematics.art' && window.location.pathname === '/';
+  const path = mathematicsHome ? '/mathematics' : legacy() ? '/5d' : route();
+  useEffect(()=>{
+    document.title=path==='/mathematics'?'Mathematics.art | Interactive mathematical research':path==='/5d'?'Polytope5D | Polytopes mathematics.art':path==='/'?'Polytopes | mathematics.art':`${path.slice(1).toUpperCase()} | Polytopes mathematics.art`;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', mathematicsHome ? '#727272' : '#090e19');
+  },[path,mathematicsHome]);
+  if (mathematicsHome) return <MathematicsHome/>;
   if (legacy()) return <FiveDApp/>; // Existing deployed hostname keeps its exact behavior.
   return <div className="portal-root"><Nav active={path}/>{path==='/5d'?<FiveDApp/>:path==='/2d'?<Dimension2DExplorer/>:path==='/3d'?<ThirdFourth dimension={3}/>:path==='/4d'?<ThirdFourth dimension={4}/>:path==='/compute'?<Compute/>:path==='/'?<Home/>:<main className="portal-content"><h1>Page not found</h1><p><a href={root}>Return to the atlas</a></p></main>}{path!=='/5d'&&<Footer/>}</div>;
 }

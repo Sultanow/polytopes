@@ -38,6 +38,34 @@ services:
       - "traefik.http.routers.polytopes-atlas-http.middlewares=polytope5d-https"
       - "traefik.http.routers.polytopes-atlas-http.service=polytope5d"
 
+      # mathematics.art homepage only — do not capture other apex-host paths.
+      - "traefik.http.routers.mathematics-home.rule=Host(`mathematics.art`) && Path(`/`)"
+      - "traefik.http.routers.mathematics-home.entrypoints=websecure"
+      - "traefik.http.routers.mathematics-home.tls=true"
+      - "traefik.http.routers.mathematics-home.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.mathematics-home.priority=1000"
+      - "traefik.http.routers.mathematics-home.service=polytope5d"
+
+      - "traefik.http.routers.mathematics-home-http.rule=Host(`mathematics.art`) && Path(`/`)"
+      - "traefik.http.routers.mathematics-home-http.entrypoints=web"
+      - "traefik.http.routers.mathematics-home-http.priority=1000"
+      - "traefik.http.routers.mathematics-home-http.middlewares=polytope5d-https"
+      - "traefik.http.routers.mathematics-home-http.service=polytope5d"
+
+      # Optional vanity URL redirects to the atlas using Nginx.
+      - "traefik.http.routers.mathematics-polytopes-link.rule=Host(`mathematics.art`) && (Path(`/polytopes`) || PathPrefix(`/polytopes/`))"
+      - "traefik.http.routers.mathematics-polytopes-link.entrypoints=websecure"
+      - "traefik.http.routers.mathematics-polytopes-link.tls=true"
+      - "traefik.http.routers.mathematics-polytopes-link.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.mathematics-polytopes-link.priority=1200"
+      - "traefik.http.routers.mathematics-polytopes-link.service=polytope5d"
+
+      - "traefik.http.routers.mathematics-polytopes-http.rule=Host(`mathematics.art`) && (Path(`/polytopes`) || PathPrefix(`/polytopes/`))"
+      - "traefik.http.routers.mathematics-polytopes-http.entrypoints=web"
+      - "traefik.http.routers.mathematics-polytopes-http.priority=1200"
+      - "traefik.http.routers.mathematics-polytopes-http.middlewares=polytope5d-https"
+      - "traefik.http.routers.mathematics-polytopes-http.service=polytope5d"
+
       # Zweite Adresse: https://mathematics.art/polytope5d/
       # Achtung: Wildcard-DNS *.mathematics.art deckt den Apex mathematics.art NICHT ab.
       - "traefik.http.routers.polytope5d-path.rule=Host(`mathematics.art`) && (Path(`/polytope5d`) || PathPrefix(`/polytope5d/`))"
