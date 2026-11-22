@@ -1,7 +1,7 @@
 """Normalize the three team cut-outs for the homepage hero: same face scale, face centred,
 eyes on a common line, transparent padding, exported as WebP (alpha).
 Also writes small square WebP thumbnails for the team section.
-Usage: python scripts/generate_home_portraits.py public/team public/home"""
+Usage: python scripts/generate_home_portraits.py public/team src/assets/home"""
 import sys
 from PIL import Image
 

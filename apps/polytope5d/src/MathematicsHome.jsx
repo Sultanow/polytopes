@@ -1,20 +1,34 @@
 import '@fontsource-variable/outfit/wght.css';
 import './mathematics-home.css';
 
+// Imported (not in public/) so Vite emits them under /assets/ with hashed names:
+// the Traefik router for mathematics.art only forwards whitelisted paths such as /assets/.
+import eldarHero from './assets/home/eldar-hero.webp';
+import malikHero from './assets/home/malik-hero.webp';
+import andreasHero from './assets/home/andreas-hero.webp';
+import eldarTeam from './assets/home/eldar-team.webp';
+import malikTeam from './assets/home/malik-team.webp';
+import andreasTeam from './assets/home/andreas-team.webp';
+import cardPolytope from './assets/home/card-polytope.svg';
+import cardSurface from './assets/home/card-surface.svg';
+import cardCompute from './assets/home/card-compute.svg';
+import heroIcosahedron from './assets/home/hero-icosahedron.svg';
+import heroMesh from './assets/home/hero-mesh.svg';
+
 const atlas = 'https://polytopes.mathematics.art';
 
 const people = [
-  { key: 'eldar', name: 'Eldar', image: '/home/eldar-team.webp' },
-  { key: 'malik', name: 'Malik', image: '/home/malik-team.webp' },
-  { key: 'andreas', name: 'Andreas', image: '/home/andreas-team.webp' },
+  { key: 'eldar', name: 'Eldar', image: eldarTeam },
+  { key: 'malik', name: 'Malik', image: malikTeam },
+  { key: 'andreas', name: 'Andreas', image: andreasTeam },
 ];
 
 // Hero cut-outs are pre-normalised (same face scale, eyes on one line, face centred),
 // so the three slots below only differ in horizontal position and stacking order.
 const heroPeople = [
-  { key: 'eldar', name: 'Eldar', image: '/home/eldar-hero.webp', slot: 'left' },
-  { key: 'malik', name: 'Malik', image: '/home/malik-hero.webp', slot: 'center' },
-  { key: 'andreas', name: 'Andreas', image: '/home/andreas-hero.webp', slot: 'right' },
+  { key: 'eldar', name: 'Eldar', image: eldarHero, slot: 'left' },
+  { key: 'malik', name: 'Malik', image: malikHero, slot: 'center' },
+  { key: 'andreas', name: 'Andreas', image: andreasHero, slot: 'right' },
 ];
 
 const projects = [
@@ -22,19 +36,19 @@ const projects = [
     title: 'Polytopes',
     text: 'Construct, explore, and visualize polytopes and related structures.',
     href: atlas,
-    visual: '/home/card-polytope.svg',
+    visual: cardPolytope,
   },
   {
     title: 'Computational Geometry',
     text: 'Algorithms, structures, and tools for high-dimensional geometry.',
     href: '#about',
-    visual: '/home/card-surface.svg',
+    visual: cardSurface,
   },
   {
     title: 'Collaborative Compute',
     text: 'Shared computational resources for large-scale mathematical experiments.',
     href: '#about',
-    visual: '/home/card-compute.svg',
+    visual: cardCompute,
   },
 ];
 
@@ -101,11 +115,11 @@ export default function MathematicsHome() {
       <main>
         <section className="math-hero" aria-labelledby="math-title">
           <div className="math-hero-bg" aria-hidden="true">
-            <img className="math-hero-mesh" src="/home/hero-mesh.svg" alt="" decoding="async" />
+            <img className="math-hero-mesh" src={heroMesh} alt="" decoding="async" />
           </div>
 
           <div className="math-hero-inner">
-            <img className="math-hero-ico" src="/home/hero-icosahedron.svg" alt="" aria-hidden="true" decoding="async" />
+            <img className="math-hero-ico" src={heroIcosahedron} alt="" aria-hidden="true" decoding="async" />
 
             <div className="math-hero-copy">
               <p className="math-overline"><span className="math-dot" /> AN OPEN LAB FOR MATHEMATICAL EXPLORATION</p>

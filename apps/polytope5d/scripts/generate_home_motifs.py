@@ -2,7 +2,7 @@
 
 All geometry is computed (real polyhedra / surfaces), projected and written as
 static SVG so the page needs no runtime JS for them.
-Usage: python scripts/generate_home_motifs.py public/home
+Usage: python scripts/generate_home_motifs.py src/assets/home
 """
 import sys, math, itertools
 import numpy as np
