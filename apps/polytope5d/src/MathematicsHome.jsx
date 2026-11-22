@@ -102,8 +102,12 @@ export default function MathematicsHome() {
   return (
     <div className="math-root">
       <header className="math-header">
-        <a className="math-logo" href="/" aria-label="mathematics.art homepage">
-          <img className="math-wordmark" src="/brand/mathematics-art-logo-dark.svg" alt="Mathematics.art" />
+        <a className="math-logo" href="/" aria-label="mathematics.art – home">
+          {/* brand mark "m." (geometry of /brand/mathematics-art-mark-dark.svg, viewBox cropped to the glyph) */}
+          <svg className="math-mark" viewBox="8 19 52.5 33" aria-hidden="true" focusable="false">
+            <path d="M10 50V30A9 9 0 0 1 28 30V50M28 30A9 9 0 0 1 46 30V50" fill="none" stroke="#f5f4ef" strokeWidth="3.78" strokeLinejoin="round" />
+            <circle className="math-mark-dot" cx="55" cy="46.53" r="3.47" fill="#70dce5" />
+          </svg>
         </a>
         <nav className="math-nav" aria-label="Main navigation">
           <a href={atlas}>Polytopes</a>
@@ -123,7 +127,7 @@ export default function MathematicsHome() {
 
             <div className="math-hero-copy">
               <p className="math-overline"><span className="math-dot" /> AN OPEN LAB FOR MATHEMATICAL EXPLORATION</p>
-              <h1 id="math-title">Mathematics<span className="math-accent">.art</span></h1>
+              <h1 id="math-title" className="math-wordtitle">mathematics<span className="math-wordtitle-dot">.</span>art</h1>
               <p className="math-intro">Mathematical visualization, computation, and research tools.</p>
               <div className="math-hero-actions">
                 <a className="math-primary" href={atlas}>Explore Polytopes <span aria-hidden="true">→</span></a>
