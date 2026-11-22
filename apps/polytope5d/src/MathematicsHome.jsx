@@ -1,10 +1,17 @@
 import './mathematics-home.css';
 
 const atlas = 'https://polytopes.mathematics.art';
+
 const people = [
-  { name: 'Eldar', image: '/team/eldar.jpg', caption: 'Research collaboration' },
-  { name: 'Malik', image: '/team/malik.jpg', caption: 'Research collaboration' },
-  { name: 'Andreas', image: '/team/andreas.jpg', caption: 'Research collaboration' },
+  { key: 'eldar', name: 'Eldar', image: '/team/eldar.jpg' },
+  { key: 'malik', name: 'Malik', image: '/team/malik.jpg' },
+  { key: 'andreas', name: 'Andreas', image: '/team/andreas.jpg' },
+];
+
+const heroPeople = [
+  { key: 'malik', name: 'Malik', image: '/team/malik.jpg', className: 'math-hero-photo--left' },
+  { key: 'eldar', name: 'Eldar', image: '/team/eldar.jpg', className: 'math-hero-photo--center' },
+  { key: 'andreas', name: 'Andreas', image: '/team/andreas.jpg', className: 'math-hero-photo--right' },
 ];
 
 export default function MathematicsHome() {
@@ -35,15 +42,16 @@ export default function MathematicsHome() {
             </div>
             <div className="math-hero-note"><span>01 /</span> An evolving collection of research tools</div>
           </div>
-          <div className="math-hero-stage" aria-label="Portraits of Eldar, Malik and Andreas">
+
+          <div className="math-hero-stage" aria-label="Portraits of Malik, Eldar and Andreas">
             <div className="math-hero-orbit" aria-hidden="true" />
-            {people.map(({ name, image }) => (
-              <div className={`math-hero-photo math-hero-photo--${name.toLowerCase()}`} key={name}>
-                <img src={image} alt={`Portrait of ${name}`} />
+            {heroPeople.map(({ key, name, image, className }) => (
+              <div className={`math-hero-photo ${className}`} key={key}>
+                <img src={image} alt={`Portrait of ${name}`} loading="eager" decoding="async" />
               </div>
             ))}
             <div className="math-hero-names">
-              {people.map(({ name }) => <a href="#team" key={name}>{name}</a>)}
+              {heroPeople.map(({ key, name }) => <a href="#team" key={key}>{name}</a>)}
             </div>
           </div>
         </section>
@@ -66,10 +74,10 @@ export default function MathematicsHome() {
         <section id="team" className="math-section math-container" aria-labelledby="math-team-title">
           <div className="math-section-heading"><p className="math-overline">THE PEOPLE</p><h2 id="math-team-title">Curiosity is collaborative.</h2><p>Three collaborators, a shared fascination for computational mathematics.</p></div>
           <div className="math-team-grid">
-            {people.map(({ name, image, caption }) => (
-              <figure className="math-person" key={name}>
-                <div className="math-portrait"><img src={image} alt={`Portrait of ${name}`} loading="lazy" /></div>
-                <figcaption><strong>{name}</strong><span>{caption}</span></figcaption>
+            {people.map(({ key, name, image }) => (
+              <figure className="math-person" key={key}>
+                <div className="math-portrait"><img src={image} alt={`Portrait of ${name}`} loading="lazy" decoding="async" /></div>
+                <figcaption><strong>{name}</strong></figcaption>
               </figure>
             ))}
           </div>
