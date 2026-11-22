@@ -2,6 +2,11 @@ name: polytope5d
 
 services:
   web:
+    logging:
+      driver: local
+      options:
+        max-size: "5m"
+        max-file: "2"
     build:
       context: .
       dockerfile: Dockerfile
@@ -94,6 +99,11 @@ services:
       start_period: 10s
 
   api:
+    logging:
+      driver: local
+      options:
+        max-size: "5m"
+        max-file: "2"
     build:
       context: ./api
     container_name: polytope5d-api

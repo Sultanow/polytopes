@@ -53,7 +53,7 @@ export default function Dimension4DLiveExplorer() {
         <Summary row={selected}/>
         <Polytope4DPoints key={selected.row_idx} vertices={selected.vertices}/>
         <details><summary>Exact 4D integer vertices and metadata (JSON)</summary><pre>{JSON.stringify(selected,null,2)}</pre></details>
-        <p className="cat4d-note">The viewer projects true 4D vertices and, where computationally feasible, exact 4D edges into 2D. The wireframe is not a 3D surface mesh; 4D facets are not rendered.</p>
+        <p className="cat4d-note">The canvas projects exact 4D lattice vertices and certified edge incidences. When all primitive supporting facets are verified, it also displays the exact polar dual. For costly or unverifiable cases, the original point/edge view remains available.</p>
       </>:<p>Select a result to view its exact lattice coordinates.</p>}
     </section>
     <p className="cat4d-attribution">Kreuzer &amp; Skarke · <a href={SOURCE} target="_blank" rel="noreferrer">calabi-yau-data/polytopes-4d</a> · CC BY-SA 4.0. Source row indexes are dataset positions, not permanent mathematical class identifiers. No mass data is stored by this application.</p>
