@@ -104,6 +104,7 @@ services:
       - polytope5d-index:/data
     networks:
       - app-net
+      - egress-net
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/healthz', timeout=3)"]
       interval: 30s
@@ -116,6 +117,8 @@ networks:
     external: true
   app-net:
     internal: true
+  egress-net:
+    driver: bridge
 
 volumes:
   polytope5d-index:
