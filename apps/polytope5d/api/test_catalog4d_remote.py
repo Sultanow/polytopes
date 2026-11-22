@@ -109,6 +109,31 @@ class Remote4DTests(TestCase):
         self.assertLess(home_i, http_i)
         self.assertTrue(any('SET http_retries=0' in x for x in statements))
 
+    def test_direct_row_worker_does_not_require_filters(self):
+        # Regression: /row/{vertex_count}/{shard_row} sends no filters key.
+        # Use a mocked DuckDB so this offline test needs neither HTTP nor httpfs.
+        import sys
+        from types import SimpleNamespace
+        from unittest.mock import MagicMock
+
+        connection = MagicMock()
+        connection.execute.return_value = connection
+        connection.description = [(x,) for x in (
+            "shard_row", "vertex_count", "facet_count", "point_count",
+            "dual_point_count", "h11", "h12", "euler_characteristic", "vertices"
+        )]
+        vertices = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[-1,-1,-1,-1]]
+        connection.fetchone.return_value = (13, 5, 5, 6, 6, 101, 1, 200, vertices)
+        with patch.dict(sys.modules, {"duckdb": SimpleNamespace(connect=lambda _: connection)}):
+            with patch.object(r, 'parquet_url', return_value='/tmp/test.parquet'):
+                ans = r._duckdb_worker({'mode':'row', 'vertex_count':5, 'shard_row':13})
+        self.assertEqual(ans['item']['shard_row'], 13)
+        self.assertEqual(ans['item']['vertices'], vertices)
+        statements = [call.args for call in connection.execute.call_args_list]
+        self.assertTrue(any('WHERE file_row_number = ?' in args[0]
+                            and args[1] == ['/tmp/test.parquet', 13]
+                            for args in statements))
+
     def test_source_row_does_not_claim_global_id(self):
         with patch.object(r,'bounded_worker',return_value={'item':{'shard_row':123}}):
             item=r.remote_row(vertex_count=9,shard_row=123)

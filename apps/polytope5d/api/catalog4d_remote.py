@@ -72,7 +72,10 @@ def _duckdb_worker(payload: dict) -> dict:
     vertex_count = payload["vertex_count"]
     mode = payload["mode"]
     url = parquet_url(vertex_count)
-    clause, params = filters_for_sql(vertex_count, payload["filters"])
+    # Direct row lookup has no filters in its payload, nor does it need any.
+    # Only count and paginated search construct a filter predicate.
+    if mode in ("count", "page"):
+        clause, params = filters_for_sql(vertex_count, payload["filters"])
     with tempfile.TemporaryDirectory(prefix="math4d-") as tmp:
         con = duckdb.connect(":memory:")
         try:
