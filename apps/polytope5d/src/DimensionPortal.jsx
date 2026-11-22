@@ -68,7 +68,7 @@ export default function DimensionPortal(){
   const path = mathematicsHome ? '/mathematics' : legacy() ? '/5d' : route();
   useEffect(()=>{
     document.title=path==='/mathematics'?'Mathematics.art | Interactive mathematical research':path==='/5d'?'Polytope5D | Polytopes mathematics.art':path==='/'?'Polytopes | mathematics.art':`${path.slice(1).toUpperCase()} | Polytopes mathematics.art`;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', mathematicsHome ? '#727272' : '#090e19');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#1a1a1a');
   },[path,mathematicsHome]);
   if (mathematicsHome) return <MathematicsHome/>;
   if (legacy()) return <FiveDApp/>; // Existing deployed hostname keeps its exact behavior.

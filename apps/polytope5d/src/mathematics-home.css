@@ -1,5 +1,5 @@
 /* Scoped landing page. The existing dark Polytopes Atlas and Polytope5D styles are untouched. */
-.math-root{--math-paper:#f5f4ef;--math-mist:#e7e7e0;--math-muted:#dedbd4;--math-line:rgba(255,255,255,.24);background:#727272;color:var(--math-paper);min-height:100vh;font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden}
+.math-root{--math-paper:#f5f4ef;--math-mist:#e7e7e0;--math-muted:#dedbd4;--math-line:rgba(255,255,255,.24);background:#1a1a1a;color:var(--math-paper);min-height:100vh;font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden}
 .math-root *{box-sizing:border-box}
 .math-root a{color:inherit;text-decoration:none}
 .math-container{width:min(1230px,calc(100% - 96px));margin-inline:auto}
@@ -21,7 +21,11 @@
 .math-primary{display:inline-flex;align-items:center;justify-content:space-between;gap:26px;min-width:194px;background:#f7f5ef;color:#494a49!important;border-radius:4px;padding:17px 21px;font-size:13px;font-weight:700}
 .math-primary:hover{background:#fff}
 .math-secondary{font-size:13px;font-weight:600;padding:14px 8px;display:inline-flex;gap:15px}
-.math-hero-note{font-size:11px;margin-top:68px;color:#dedbd5;letter-spacing:.4px}.math-hero-note span{margin-right:13px;color:#fefefe}
+.math-hero-team{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:38px}
+.math-hero-person{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;color:var(--math-paper)}
+.math-hero-person img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#1a1a1a;border:1px solid rgba(255,255,255,.22)}
+.math-hero-person:hover span{text-decoration:underline;text-underline-offset:4px}
+.math-hero-note{font-size:11px;margin-top:28px;color:#dedbd5;letter-spacing:.4px}.math-hero-note span{margin-right:13px;color:#fefefe}
 .math-visual{position:relative;min-height:490px;background:radial-gradient(circle at 50% 43%,#323c4b 0%,#252a31 55%,#1d2228 100%);overflow:hidden;border-radius:6px;border:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column;box-shadow:0 28px 65px rgba(0,0,0,.13)}
 .math-visual:before{content:'';pointer-events:none;position:absolute;inset:0;z-index:0;background:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:34px 34px}
 .math-visual-top,.math-visual-bottom{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:22px 24px;font-size:10px;letter-spacing:1.2px;color:#bbd1d8}
@@ -36,7 +40,7 @@
 .math-project-feature,.math-project-future{min-height:360px;border:1px solid var(--math-line);border-radius:5px;padding:28px 30px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
 .math-project-feature{background:#f3f1eb;color:#515356!important}
 .math-project-feature:hover{background:#fff;transform:translateY(-2px);transition:transform .15s}
-.math-project-future{background:#686868;color:var(--math-paper)}
+.math-project-future{background:#242424;color:var(--math-paper)}
 .math-project-meta,.math-project-number{font-size:10px;letter-spacing:1.6px;font-weight:700;display:flex;justify-content:space-between}
 .math-project-feature h3,.math-project-future h3{font-size:37px;margin:10px 0;letter-spacing:-1.5px;font-weight:600}
 .math-project-feature p,.math-project-future p{max-width:450px;font-size:14px;line-height:1.75;opacity:.87;margin:0 0 18px}
@@ -45,12 +49,12 @@
 .math-mini-polytope{position:absolute;right:24px;top:85px;width:175px;height:140px;color:#a4b0b4;opacity:.52;pointer-events:none}
 .math-coming{font-size:12px;border:1px solid rgba(255,255,255,.32);border-radius:30px;padding:8px 12px;display:inline-block}
 .math-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
-.math-person{margin:0;min-width:0}.math-portrait{background:#606060;position:relative;overflow:hidden;aspect-ratio:4/4.3;border-radius:5px}
+.math-person{margin:0;min-width:0}.math-portrait{background:#1a1a1a;position:relative;overflow:hidden;aspect-ratio:4/4.3;border-radius:5px}
 .math-portrait img{height:100%;width:100%;object-fit:cover;display:block;filter:saturate(.55)}
 .math-portrait-index{position:absolute;top:19px;left:20px;font-size:12px;letter-spacing:1.8px;color:#fff;z-index:2}
 .math-person figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-top:15px}.math-person figcaption strong{font-size:19px;font-weight:600}.math-person figcaption span{font-size:11px;opacity:.84;text-align:right}
 .math-photo-note{margin:19px 0 0;font-size:11px;opacity:.78}
-.math-about{background:#626262;margin-top:30px;padding:85px 0 95px}
+.math-about{background:#1a1a1a;margin-top:30px;padding:85px 0 95px}
 .math-about-inner{display:grid;grid-template-columns:1fr .66fr;column-gap:50px}.math-about-inner>.math-overline{grid-column:1/-1}
 .math-about h2{font-size:clamp(40px,4.5vw,69px);letter-spacing:-3px;line-height:1.18;margin:0;font-weight:600}
 .math-about p:not(.math-overline){margin:4px 0 22px;font-size:16px;line-height:1.85;color:#efede8}

@@ -2,9 +2,9 @@ import './mathematics-home.css';
 
 const atlas = 'https://polytopes.mathematics.art';
 const people = [
-  { name: 'Eldar', image: '/team/eldar.svg', caption: 'Research collaboration' },
-  { name: 'Malik', image: '/team/malik.svg', caption: 'Research collaboration' },
-  { name: 'Andreas', image: '/team/andreas.svg', caption: 'Research collaboration' },
+  { name: 'Eldar', image: '/team/eldar.jpg', caption: 'Research collaboration' },
+  { name: 'Malik', image: '/team/malik.jpg', caption: 'Research collaboration' },
+  { name: 'Andreas', image: '/team/andreas.jpg', caption: 'Research collaboration' },
 ];
 
 export default function MathematicsHome() {
@@ -32,6 +32,14 @@ export default function MathematicsHome() {
             <div className="math-hero-actions">
               <a className="math-primary" href={atlas}>Explore Polytopes <span aria-hidden="true">↗</span></a>
               <a className="math-secondary" href="#about">Our approach <span aria-hidden="true">↓</span></a>
+            </div>
+            <div className="math-hero-team" aria-label="Project collaborators">
+              {people.map(({ name, image }) => (
+                <a key={name} href="#team" title={`Meet ${name}`} className="math-hero-person">
+                  <img src={image} alt="" />
+                  <span>{name}</span>
+                </a>
+              ))}
             </div>
             <div className="math-hero-note"><span>01 /</span> An evolving collection of research tools</div>
           </div>
@@ -62,12 +70,11 @@ export default function MathematicsHome() {
           <div className="math-team-grid">
             {people.map(({ name, image, caption }, index) => (
               <figure className="math-person" key={name}>
-                <div className="math-portrait"><img src={image} alt={`Illustrated placeholder portrait for ${name}; photo to be added`} loading="lazy" /><span className="math-portrait-index">0{index + 1}</span></div>
+                <div className="math-portrait"><img src={image} alt={`Portrait of ${name}`} loading="lazy" /><span className="math-portrait-index">0{index + 1}</span></div>
                 <figcaption><strong>{name}</strong><span>{caption}</span></figcaption>
               </figure>
             ))}
           </div>
-          <p className="math-photo-note">Portraits are placeholders and will be replaced with photographs.</p>
         </section>
 
         <section id="about" className="math-about">

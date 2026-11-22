@@ -1,5 +1,5 @@
 /* Multidimensional atlas shell. Scoped styles keep the existing 5D view intact. */
-.portal-root { min-height:100vh; background:radial-gradient(ellipse at 80% 13%,rgba(38,95,116,.19),transparent 40%), #090e19; color:#eaf6f8; }
+.portal-root { min-height:100vh; background:#1a1a1a; color:#eaf6f8; }
 .portal-root * {box-sizing:border-box}
 .portal-root h1, .portal-root h2, .portal-root h3 {font-family:inherit;}
 .portal-root h2 {font-size:clamp(27px,3.1vw,41px);letter-spacing:-1.3px;font-weight:600;margin:0;line-height:1.2}
