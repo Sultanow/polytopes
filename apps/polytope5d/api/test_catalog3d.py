@@ -12,7 +12,15 @@ SIMPLEX=[[1,0,0],[0,1,0],[0,0,1],[-1,-1,-1]]
 
 
 def to_palp(vertices):
-    return f'3 {len(vertices)} Vertices\n'+'\n'.join(' '.join(str(v[i]) for v in vertices) for i in range(3))+'\n'
+    return f'3 {len(vertices)} Vertices\n' + '\n'.join(
+        ' '.join(str(v[i]) for v in vertices) for i in range(3)
+    ) + '\n'
+
+
+def to_palp_vertex_rows(vertices):
+    return f'{len(vertices)} 3 Vertices\n' + '\n'.join(
+        ' '.join(map(str, v)) for v in vertices
+    ) + '\n'
 
 class ExactThreeDTests(unittest.TestCase):
     def test_examples_and_polar_duality(self):
@@ -30,8 +38,31 @@ class ExactThreeDTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             exact_geometry([[2,0,0],[0,2,0],[0,0,2],[-2,-2,-2]])
     def test_matrix_format(self):
-        text=to_palp(CUBE)+to_palp(OCTAHEDRON)
-        self.assertEqual(list(read_palp_matrices(text)),[CUBE,OCTAHEDRON])
+        text = to_palp(CUBE) + to_palp(OCTAHEDRON)
+        self.assertEqual(list(read_palp_matrices(text)), [CUBE, OCTAHEDRON])
+
+    def test_sagemath_vertex_row_format_4x3(self):
+        # The real SageMath package begins with an Nx3 block, e.g. 4x3.
+        self.assertEqual(list(read_palp_matrices(to_palp_vertex_rows(SIMPLEX))), [SIMPLEX])
+
+    def test_mixed_orientations(self):
+        text = to_palp_vertex_rows(SIMPLEX) + '\n' + to_palp(CUBE)
+        self.assertEqual(list(read_palp_matrices(text)), [SIMPLEX, CUBE])
+
+    def test_vertex_row_truncation_and_bad_shape(self):
+        with self.assertRaisesRegex(ValueError, 'Truncated matrix'):
+            list(read_palp_matrices('4 3\n1 0 0\n0 1 0\n0 0 1\n'))
+        with self.assertRaisesRegex(ValueError, 'Unexpected PALP matrix shape'):
+            list(read_palp_matrices('4 4\n'))
+
+    def test_vertex_row_import(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = Path(tmp) / 'vertex_rows.db'
+            result = import_text(to_palp_vertex_rows(SIMPLEX), db, expected_count=1)
+            self.assertEqual(result['count'], 1)
+            with connect(db) as con:
+                row = con.execute('SELECT vertex_count, edge_count, facet_count FROM catalogue3d').fetchone()
+                self.assertEqual(tuple(row), (4, 6, 4))
     def test_transactional_rollback(self):
         with tempfile.TemporaryDirectory() as tmp:
             db=Path(tmp)/'test.db'

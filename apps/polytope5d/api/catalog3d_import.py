@@ -23,32 +23,49 @@ HEADER = re.compile(r'^\s*(\d+)\s+(\d+)(?:\s+.*)?$')
 
 
 def read_palp_matrices(text):
-    """Parse SageMath's line-oriented PALP vertex-matrix stream.
+    """Read either PALP orientation while returning one [x,y,z] per vertex.
 
-    Each block: `3 N [comment]` followed by three rows of N signed integers;
-    columns of the matrix are the lattice vertices. Error on malformed input.
+    SageMath's vertex lists use `N 3` (N vertex rows) for small
+    polytopes. PALP also accepts `3 N` (coordinate rows). The header
+    specifies matrix rows and columns, not dimension and vertex count.
+    Both orientations must yield exactly 3 coordinates per vertex.
     """
-    lines = iter(enumerate(StringIO(text),1))
+    lines = iter(enumerate(StringIO(text), 1))
     for line_no, line in lines:
         line = line.strip()
         if not line or line.startswith('#'):
             continue
-        match=HEADER.match(line)
+        match = HEADER.match(line)
         if not match:
             raise ValueError(f'PALP header at line {line_no}: {line[:120]}')
-        dimension, n = map(int, match.groups())
-        if dimension != 3 or not 4 <= n <= 128:
-            raise ValueError(f'Unexpected PALP matrix shape {dimension}x{n} at line {line_no}')
-        rows=[]
-        for r in range(3):
-            try: row_no, row = next(lines)
-            except StopIteration as e: raise ValueError(f'Truncated matrix after line {line_no}') from e
-            parts=row.split()
-            if len(parts) != n:
-                raise ValueError(f'PALP line {row_no}: expected {n} entries, got {len(parts)}')
-            try: rows.append([int(x) for x in parts])
-            except ValueError as e: raise ValueError(f'Noninteger vertex at PALP line {row_no}') from e
-        yield [list(p) for p in zip(*rows)]
+        rows_count, cols_count = map(int, match.groups())
+        if cols_count == 3 and 4 <= rows_count <= 128:
+            orientation = 'vertex_rows'
+            vertex_count = rows_count
+        elif rows_count == 3 and 4 <= cols_count <= 128:
+            orientation = 'coordinate_rows'
+            vertex_count = cols_count
+        else:
+            raise ValueError(
+                f'Unexpected PALP matrix shape {rows_count}x{cols_count} at line {line_no}; '
+                'expected Nx3 or 3xN with N >= 4'
+            )
+        rows = []
+        for _ in range(rows_count):
+            try:
+                row_no, row = next(lines)
+            except StopIteration as e:
+                raise ValueError(f'Truncated matrix after line {line_no}') from e
+            parts = row.split()
+            if len(parts) != cols_count:
+                raise ValueError(f'PALP line {row_no}: expected {cols_count} entries, got {len(parts)}')
+            try:
+                rows.append([int(x) for x in parts])
+            except ValueError as e:
+                raise ValueError(f'Noninteger vertex at PALP line {row_no}') from e
+        vertices = rows if orientation == 'vertex_rows' else [list(v) for v in zip(*rows)]
+        assert len(vertices) == vertex_count and all(len(v) == 3 for v in vertices)
+        yield vertices
 
 
 def import_text(text, db_path=DB_PATH, expected_count=4319):
