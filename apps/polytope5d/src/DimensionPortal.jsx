@@ -25,7 +25,7 @@ function legacy() {
 }
 function Nav({active}) {
   return <nav className="portal-nav" aria-label="Polytope dimensions">
-    <a className="portal-logo" href={root+'/'}><span className="portal-mark">P<span>.</span></span>POLYTOPES<span className="portal-muted">.MATHEMATICS.ART</span></a>
+    <a className="portal-logo" href={root+'/'}><img className="portal-logo-mark" src="/brand/mathematics-art-mark-dark.svg" alt="" width="64" height="64" />POLYTOPES<span className="portal-muted">.MATHEMATICS.ART</span></a>
     <div className="portal-navlinks">{['2d','3d','4d','5d','compute'].map(p=><a key={p} className={active===`/${p}`?'current':''} aria-current={active===`/${p}`?'page':undefined} href={`${root}/${p}`}>{p==='compute'?'Compute':p.toUpperCase()}</a>)}</div>
   </nav>;
 }

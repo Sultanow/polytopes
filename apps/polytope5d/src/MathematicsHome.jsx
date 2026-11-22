@@ -19,8 +19,7 @@ export default function MathematicsHome() {
     <div className="math-root">
       <header className="math-header">
         <a className="math-logo" href="/" aria-label="mathematics.art homepage">
-          <span className="math-logo-icon">m<span>.</span></span>
-          <span>mathematics<span className="math-logo-suffix">.art</span></span>
+          <img className="math-logo-svg" src="/brand/mathematics-art-logo-dark.svg" alt="mathematics.art" width="939" height="83" />
         </a>
         <nav className="math-nav" aria-label="Main navigation">
           <a href="#projects">Projects</a>

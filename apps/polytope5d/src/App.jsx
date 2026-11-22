@@ -40,8 +40,7 @@ export default function App() {
     <div className="app-shell">
       <header className="site-header">
         <a className="brand" href="https://mathematics.art/" aria-label="mathematics.art homepage">
-          <span className="brand-mark">M<span className="brand-dot">.</span></span>
-          <span>mathematics<span className="muted">.art</span></span>
+          <img src="/brand/mathematics-art-logo-dark.svg" alt="mathematics.art" width="939" height="83" style={{ display: 'block', height: 23, width: 'auto' }} />
         </a>
         <span className="header-tag"><span className="live-dot" /> RESEARCH PREVIEW · V0.3</span>
       </header>
