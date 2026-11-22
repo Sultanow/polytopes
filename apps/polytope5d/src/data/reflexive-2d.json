@@ -1,0 +1,598 @@
+{
+  "dimension": 2,
+  "count": 16,
+  "source": "Exact generated representatives; see scripts/generate_reflexive_2d.py",
+  "polytopes": [
+    {
+      "id": "P01",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "vertex_count": 3,
+      "area_twice": 3
+    },
+    {
+      "id": "P02",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "vertex_count": 3,
+      "area_twice": 4
+    },
+    {
+      "id": "P03",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "vertex_count": 3,
+      "area_twice": 6
+    },
+    {
+      "id": "P04",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "vertex_count": 3,
+      "area_twice": 8
+    },
+    {
+      "id": "P05",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "vertex_count": 3,
+      "area_twice": 9
+    },
+    {
+      "id": "P06",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 4
+    },
+    {
+      "id": "P07",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 4
+    },
+    {
+      "id": "P08",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 5
+    },
+    {
+      "id": "P09",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 6
+    },
+    {
+      "id": "P10",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 7
+    },
+    {
+      "id": "P11",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 8
+    },
+    {
+      "id": "P12",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "vertex_count": 4,
+      "area_twice": 8
+    },
+    {
+      "id": "P13",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 5,
+      "area_twice": 5
+    },
+    {
+      "id": "P14",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 5,
+      "area_twice": 6
+    },
+    {
+      "id": "P15",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 5,
+      "area_twice": 7
+    },
+    {
+      "id": "P16",
+      "vertices": [
+        [
+          -3,
+          -2
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "vertex_count": 6,
+      "area_twice": 6
+    }
+  ],
+  "cover_edges": [
+    {
+      "from": "P01",
+      "to": "P06",
+      "matrix": [
+        -1,
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "from": "P02",
+      "to": "P08",
+      "matrix": [
+        -1,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P03",
+      "to": "P10",
+      "matrix": [
+        -1,
+        0,
+        -1,
+        1
+      ]
+    },
+    {
+      "from": "P06",
+      "to": "P08",
+      "matrix": [
+        3,
+        -4,
+        1,
+        -1
+      ]
+    },
+    {
+      "from": "P06",
+      "to": "P13",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P07",
+      "to": "P13",
+      "matrix": [
+        -1,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P08",
+      "to": "P03",
+      "matrix": [
+        3,
+        -4,
+        1,
+        -1
+      ]
+    },
+    {
+      "from": "P08",
+      "to": "P09",
+      "matrix": [
+        3,
+        -5,
+        2,
+        -3
+      ]
+    },
+    {
+      "from": "P08",
+      "to": "P14",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P09",
+      "to": "P10",
+      "matrix": [
+        3,
+        -4,
+        1,
+        -1
+      ]
+    },
+    {
+      "from": "P09",
+      "to": "P15",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P10",
+      "to": "P04",
+      "matrix": [
+        0,
+        1,
+        1,
+        -1
+      ]
+    },
+    {
+      "from": "P10",
+      "to": "P12",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P12",
+      "to": "P05",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P13",
+      "to": "P09",
+      "matrix": [
+        -1,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P13",
+      "to": "P14",
+      "matrix": [
+        0,
+        -1,
+        1,
+        -2
+      ]
+    },
+    {
+      "from": "P13",
+      "to": "P16",
+      "matrix": [
+        -1,
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "from": "P14",
+      "to": "P10",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P14",
+      "to": "P15",
+      "matrix": [
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "from": "P15",
+      "to": "P11",
+      "matrix": [
+        -1,
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "from": "P15",
+      "to": "P12",
+      "matrix": [
+        3,
+        -4,
+        1,
+        -1
+      ]
+    },
+    {
+      "from": "P16",
+      "to": "P15",
+      "matrix": [
+        -1,
+        0,
+        0,
+        -1
+      ]
+    }
+  ],
+  "notes": "Each edge gives a verified GL(2,Z) embedding of the from-polytope into the to-polytope. The displayed relation is within this verified subset of cover candidates."
+}

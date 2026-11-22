@@ -26,6 +26,18 @@ services:
       - "traefik.http.routers.polytope5d-subdomain.tls.certresolver=letsencrypt"
       - "traefik.http.routers.polytope5d-subdomain.service=polytope5d"
 
+      # New multi-dimensional atlas: https://polytopes.mathematics.art/
+      - "traefik.http.routers.polytopes-atlas.rule=Host(`polytopes.mathematics.art`)"
+      - "traefik.http.routers.polytopes-atlas.entrypoints=websecure"
+      - "traefik.http.routers.polytopes-atlas.tls=true"
+      - "traefik.http.routers.polytopes-atlas.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.polytopes-atlas.service=polytope5d"
+
+      - "traefik.http.routers.polytopes-atlas-http.rule=Host(`polytopes.mathematics.art`)"
+      - "traefik.http.routers.polytopes-atlas-http.entrypoints=web"
+      - "traefik.http.routers.polytopes-atlas-http.middlewares=polytope5d-https"
+      - "traefik.http.routers.polytopes-atlas-http.service=polytope5d"
+
       # Zweite Adresse: https://mathematics.art/polytope5d/
       # Achtung: Wildcard-DNS *.mathematics.art deckt den Apex mathematics.art NICHT ab.
       - "traefik.http.routers.polytope5d-path.rule=Host(`mathematics.art`) && (Path(`/polytope5d`) || PathPrefix(`/polytope5d/`))"
