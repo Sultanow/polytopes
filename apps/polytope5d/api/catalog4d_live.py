@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from urllib import error, parse, request
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Path as ApiPath, Query
 
 router = APIRouter(prefix="/api/4d/live", tags=["4D live source"])
 SOURCE = "calabi-yau-data/polytopes-4d"
@@ -19,6 +19,7 @@ SPLIT = "full"
 FIELDS = ("vertex_count", "facet_count", "point_count", "dual_point_count",
           "h11", "h12", "euler_characteristic")
 MAX_RESPONSE_BYTES = 2_000_000
+TOTAL_ROWS = 473_800_776
 
 
 def predicates(**kwargs):
@@ -127,4 +128,30 @@ def search_page(*, offset: int, limit: int, **filters):
         "source": SOURCE, "source_split": SPLIT, "full_dataset_rows": 473_800_776,
         "indexed_complete": False,
         "notice": "Filter results may be incomplete because the provider only indexes the first 5 GB of datasets this large.",
+    }
+
+
+@router.get("/row/{row_idx}")
+def row_by_position(row_idx: int = ApiPath(..., ge=0, lt=TOTAL_ROWS)):
+    """Fetch one arbitrary source position without walking or indexing the catalogue.
+
+    A position is not a permanent class ID: the provider may change dataset order.
+    No local caching or downloaded Parquet shards are needed.
+    """
+    params = {"dataset": SOURCE, "config": CONFIG, "split": SPLIT,
+              "offset": row_idx, "length": 1}
+    upstream = upstream_json("/rows", params)
+    records = upstream.get("rows")
+    if not isinstance(records, list):
+        raise HTTPException(502, "Unexpected Hugging Face rows format")
+    if len(records) != 1:
+        raise HTTPException(404, "No row at this dataset position")
+    selected = safe_row(records[0])
+    if selected is None or selected["row_idx"] != row_idx:
+        raise HTTPException(502, "Upstream row index or 4D coordinates are inconsistent")
+    return {
+        "item": selected, "source": SOURCE, "source_split": SPLIT,
+        "source_row": row_idx, "full_dataset_rows": TOTAL_ROWS,
+        "position_is_permanent_id": False,
+        "notice": "This link refers to the current dataset row order, not a permanent mathematical class identifier.",
     }
