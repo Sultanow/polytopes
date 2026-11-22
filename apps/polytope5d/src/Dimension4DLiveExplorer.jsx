@@ -25,16 +25,25 @@ function shardFromUrl() {
   const v = p.get('shard'), r = p.get('shard_row');
   if (!v || !r || !isUInt(v) || !isUInt(r)) return null;
   const n = Number(v), i = Number(r);
-  return n >= 5 && n <= 15 && Number.isSafeInteger(i) && i <= 100000000 ? {v:n,i} : null;
+  if (!(n >= 5 && n <= 15 && Number.isSafeInteger(i) && i <= 100000000)) return null;
+  const fp=p.get('fp'), rev=p.get('rev');
+  if (fp && !/^[a-f0-9]{64}$/.test(fp)) return null;
+  if (rev && !/^[a-f0-9]{40}$/.test(rev)) return null;
+  return {v:n,i,fp:fp||null,rev:rev||null};
 }
 function permalink(item) {
   const url = new URL(window.location.href);
   url.searchParams.delete('row');
   url.searchParams.delete('shard');
   url.searchParams.delete('shard_row');
+  url.searchParams.delete('fp');
+  url.searchParams.delete('rev');
   if (item.shard_vertices !== undefined) {
     url.searchParams.set('shard', String(item.shard_vertices));
     url.searchParams.set('shard_row', String(item.shard_row));
+    if (item.fingerprint) url.searchParams.set('fp', item.fingerprint);
+    if (item.source_revision_pinned && /^[a-f0-9]{40}$/.test(item.source_revision||''))
+      url.searchParams.set('rev', item.source_revision);
   } else {
     url.searchParams.set('row', String(item.row_idx));
   }
@@ -61,7 +70,10 @@ function normalizeRemote(item, vertexCount) {
 export default function Dimension4DLiveExplorer() {
   const [draft,setDraft] = useState(EMPTY);
   const [applied,setApplied] = useState(null);
-  const [offset,setOffset] = useState(0);
+  // File-row cursors avoid the legacy 10,000-result offset ceiling.
+  const [pageCursors,setPageCursors] = useState([null]);
+  const [pageIndex,setPageIndex] = useState(0);
+  const [nextCursor,setNextCursor] = useState(null);
   const [results,setResults] = useState([]);
   const [hasMore,setHasMore] = useState(false);
   const [selected,setSelected] = useState(null);
@@ -92,11 +104,15 @@ export default function Dimension4DLiveExplorer() {
     let active = true;
     const controller = new AbortController();
     setRowLoading(true); setRowError(''); setSelected(null);
+    const linkParams = new URLSearchParams();
+    if (shard?.fp) linkParams.set('fp',shard.fp);
+    if (shard?.rev) linkParams.set('rev',shard.rev);
     const endpoint = shard
-      ? `/api/4d/remote/row/${shard.v}/${shard.i}`
+      ? `/api/4d/remote/row/${shard.v}/${shard.i}${linkParams.size ? `?${linkParams}` : ''}`
       : `/api/4d/live/row/${original}`;
     fetch(endpoint,{signal:controller.signal}).then(responseJson).then(data => {
-      if (active) setSelected(shard ? normalizeRemote(data.item,shard.v) : data.item);
+      if (active) setSelected(shard ? normalizeRemote({...data.item,
+        source_revision:data.source_revision,source_revision_pinned:data.source_revision_pinned},shard.v) : data.item);
     }).catch(exc => {
       if (active && exc.name !== 'AbortError') setRowError(exc.message);
     }).finally(() => {if (active) setRowLoading(false);});
@@ -108,17 +124,20 @@ export default function Dimension4DLiveExplorer() {
     let active = true;
     const controller = new AbortController();
     setLoading(true);setError('');setResults([]);
-    const params = new URLSearchParams({offset:String(offset),limit:String(LIMIT)});
+    const params = new URLSearchParams({limit:String(LIMIT)});
+    if (pageCursors[pageIndex] !== null) params.set('after_row',String(pageCursors[pageIndex]));
     Object.entries(applied).forEach(([name,value]) => {if (value !== '') params.set(name,value);});
     fetch(`/api/4d/remote/search?${params}`,{signal:controller.signal}).then(responseJson).then(data => {
       if (!active) return;
-      setResults((data.items||[]).map(item => normalizeRemote(item,Number(applied.vertex_count))));
+      setResults((data.items||[]).map(item => normalizeRemote({...item,
+        source_revision:data.source_revision,source_revision_pinned:data.source_revision_pinned},Number(applied.vertex_count))));
       setHasMore(Boolean(data.has_more));
+      setNextCursor(data.next_cursor ?? null);
     }).catch(exc => {
       if (active && exc.name !== 'AbortError') setError(exc.message);
     }).finally(() => {if (active) setLoading(false);});
     return () => {active=false;controller.abort();};
-  }, [applied,offset]);
+  }, [applied,pageIndex,pageCursors]);
 
   function applyFilters(event) {
     event.preventDefault();
@@ -129,10 +148,10 @@ export default function Dimension4DLiveExplorer() {
     if (v >= 10 && Object.entries(draft).filter(([k]) => k !== 'vertex_count').every(([,x]) => x === '')) {
       setError('For 10–15 vertices, specify at least one additional numeric filter.');return;
     }
-    setError('');setExactCount(null);setCountError('');setOffset(0);
+    setError('');setExactCount(null);setCountError('');setPageIndex(0);setPageCursors([null]);setNextCursor(null);
     setDeepLink({original:null,shard:null});setSelected(null);
     const clean = new URL(window.location.href);
-    ['row','shard','shard_row'].forEach(key=>clean.searchParams.delete(key));
+    ['row','shard','shard_row','fp','rev'].forEach(key=>clean.searchParams.delete(key));
     window.history.replaceState({},'',clean);
     setApplied({...draft});
   }
@@ -151,7 +170,7 @@ export default function Dimension4DLiveExplorer() {
     if (deepLink.original === idx && !deepLink.shard) setRetry(x => x+1);
     else setDeepLink(next);
     const url = new URL(window.location.href);
-    url.searchParams.delete('shard');url.searchParams.delete('shard_row');
+    ['shard','shard_row','fp','rev'].forEach(key=>url.searchParams.delete(key));
     url.searchParams.set('row',String(idx));
     window.history.pushState({},'',url);
   }
@@ -190,7 +209,7 @@ export default function Dimension4DLiveExplorer() {
             onChange={e => setDraft(d => ({...d,[name]:e.target.value}))}/>
         </label>)}
         <div className="cat4d-form-actions"><button type="submit" disabled={loading||countLoading}>Search</button>
-          <button type="button" disabled={loading||countLoading} onClick={() => {setDraft(EMPTY);setApplied(null);setResults([]);setSelected(null);setExactCount(null);setError('');const clean=new URL(window.location.href);['row','shard','shard_row'].forEach(key=>clean.searchParams.delete(key));window.history.replaceState({},'',clean);}}>Reset</button>
+          <button type="button" disabled={loading||countLoading} onClick={() => {setDraft(EMPTY);setApplied(null);setResults([]);setSelected(null);setExactCount(null);setError('');const clean=new URL(window.location.href);['row','shard','shard_row','fp','rev'].forEach(key=>clean.searchParams.delete(key));window.history.replaceState({},'',clean);}}>Reset</button>
         </div>
       </form>
       {error && <div className="cat4d-error" role="alert">Remote query: {error}</div>}
@@ -212,9 +231,10 @@ export default function Dimension4DLiveExplorer() {
         <span>h¹¹={row.h11} · h¹²={row.h12} · χ={row.euler_characteristic}</span>
       </button>)}</div>
       <div className="cat4d-pager">
-        <button type="button" disabled={loading||!applied||offset===0} onClick={()=>setOffset(Math.max(0,offset-LIMIT))}>← Previous</button>
-        <span>Offset {offset.toLocaleString('en-US')}</span>
-        <button type="button" disabled={loading||!applied||!hasMore||offset+LIMIT>10000} onClick={()=>setOffset(offset+LIMIT)}>Next →</button>
+        <button type="button" disabled={loading||!applied||pageIndex===0} onClick={()=>setPageIndex(i=>i-1)}>← Previous</button>
+        <span>Page {pageIndex+1} · cursor-based</span>
+        <button type="button" disabled={loading||!applied||!hasMore||nextCursor===null}
+          onClick={()=>{setPageCursors(c=>[...c.slice(0,pageIndex+1),nextCursor]);setPageIndex(i=>i+1);}}>Next →</button>
       </div>
     </section>
 
@@ -233,6 +253,8 @@ export default function Dimension4DLiveExplorer() {
         <div className="cat4d-share"><a href={permalink(selected)} target="_blank" rel="noreferrer">Open direct link ↗</a>
           <button type="button" onClick={copyLink}>Copy link</button>
           {copyState && <span role="status">{copyState}</span>}</div>
+        {selected.fingerprint && <p className="cat4d-provenance">Content SHA-256: <code>{selected.fingerprint}</code> · Source: {selected.source_revision_pinned
+          ? `pinned ${selected.source_revision.slice(0,12)}` : 'main (mutable; link fingerprint checked on reload)'}</p>}
         <Summary row={selected}/>
         <Polytope4DPoints key={identity(selected)} vertices={selected.vertices}/>
         <details><summary>Exact 4D vertices and metadata (JSON)</summary><pre>{JSON.stringify(selected,null,2)}</pre></details>

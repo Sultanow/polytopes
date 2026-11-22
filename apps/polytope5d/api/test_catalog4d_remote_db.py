@@ -41,3 +41,8 @@ class LocalParquetTest(unittest.TestCase):
                 self.assertEqual(len(row['vertices']),5)
                 opened = remote._duckdb_worker({'mode':'row','vertex_count':5,'shard_row':0})
                 self.assertEqual(opened['item']['h11'],101)
+                self.assertEqual(len(opened['item']['fingerprint']), 64)
+                # Test file-relative seek pagination without downloading anything.
+                cursor_page = remote._duckdb_worker({'mode':'page','vertex_count':5,
+                    'filters':{'h11':101},'after_row':0,'limit':6})
+                self.assertEqual(cursor_page['items'], [])

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import hashlib
+import re
 import json
 import logging
 import os
@@ -21,7 +23,15 @@ from fastapi import APIRouter, HTTPException, Path as ApiPath, Query
 
 router = APIRouter(prefix="/api/4d/remote", tags=["4D bounded Parquet pilot"])
 SOURCE = "calabi-yau-data/polytopes-4d"
-BASE = "https://huggingface.co/datasets/calabi-yau-data/polytopes-4d/resolve/main/"
+# Optionally pin this dataset to a verified, immutable 40-character HF commit.
+# Defaults to mutable 'main'; content fingerprint still protects deep links.
+_REV = os.environ.get("POLYTOPES_4D_REVISION", "").strip().lower()
+if _REV and not re.fullmatch(r"[0-9a-f]{40}", _REV):
+    raise RuntimeError("POLYTOPES_4D_REVISION must be a 40-character lowercase commit SHA")
+SOURCE_REVISION = _REV or "main"
+REVISION_PINNED = bool(_REV)
+BASE = f"https://huggingface.co/datasets/{SOURCE}/resolve/{SOURCE_REVISION}/"
+
 # Phase 1: bounded, single-shard pilot; no implicit multi-shard scans.
 SUPPORTED_SHARDS = tuple(range(5, 16))
 FILTER_NAMES = (
@@ -34,6 +44,18 @@ RETURN_FIELDS = (
 WORKER_TIMEOUT_SECONDS = 40
 LOCKFILE = "/tmp/mathematics-art-4d-search.lock"
 MAX_OUTPUT_BYTES = 500_000  # includes <=12 records with <=128 vertices, enforced below
+
+
+def row_fingerprint(row: dict) -> str:
+    """Content fingerprint for detecting dataset/row changes; NOT a GL(4,Z) class hash."""
+    keys = (*RETURN_FIELDS, "vertices")
+    canonical = json.dumps({key: row[key] for key in keys},
+                           sort_keys=True, ensure_ascii=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def add_fingerprint(row: dict) -> dict:
+    return {**row, "fingerprint": row_fingerprint(row)}
 
 
 def parquet_url(vertex_count: int) -> str:
@@ -102,9 +124,18 @@ def _duckdb_worker(payload: dict) -> dict:
                 # Keep physical, file-relative indexes so source links cannot be
                 # confused with the Hugging Face global viewer row_idx.
                 columns = ", ".join(("file_row_number AS shard_row", *RETURN_FIELDS, "vertices"))
-                sql = (f"SELECT {columns} FROM read_parquet(?, file_row_number=true) "
-                       f"WHERE {clause} ORDER BY shard_row LIMIT ? OFFSET ?")
-                page = con.execute(sql, [url, *params, payload["limit"] + 1, payload["offset"]])
+                after_row = payload.get("after_row")
+                if after_row is None:
+                    # Legacy offset is kept so existing API consumers still work.
+                    sql = (f"SELECT {columns} FROM read_parquet(?, file_row_number=true) "
+                           f"WHERE {clause} ORDER BY shard_row LIMIT ? OFFSET ?")
+                    args = [url, *params, payload["limit"] + 1, payload.get("offset", 0)]
+                else:
+                    sql = (f"SELECT {columns} FROM read_parquet(?, file_row_number=true) "
+                           f"WHERE {clause} AND file_row_number > ? "
+                           "ORDER BY shard_row LIMIT ?")
+                    args = [url, *params, after_row, payload["limit"] + 1]
+                page = con.execute(sql, args)
                 rows = page.fetchall()
                 result = []
                 names = [d[0] for d in page.description]
@@ -116,15 +147,16 @@ def _duckdb_worker(payload: dict) -> dict:
                                     and all(type(x) is int and abs(x) < 10**9 for x in v)
                                     for v in vertices)):
                         raise ValueError("Unusable 4D vertices in provider row")
-                    result.append(item)
+                    result.append(add_fingerprint(item))
                 return {"items": result, "has_more": len(rows) > payload["limit"],
+                        "next_cursor": result[-1]["shard_row"] if result and len(rows) > payload["limit"] else None,
                         "count_exact_for_shard": False}
             if mode == "row":
                 sql = ("SELECT file_row_number AS shard_row, " + ", ".join((*RETURN_FIELDS, "vertices"))
                        + " FROM read_parquet(?, file_row_number=true) WHERE file_row_number = ? LIMIT 1")
                 query = con.execute(sql, [url, payload["shard_row"]])
                 row = query.fetchone()
-                return {"item": dict(zip((d[0] for d in query.description), row)) if row else None}
+                return {"item": add_fingerprint(dict(zip((d[0] for d in query.description), row))) if row else None}
             raise ValueError("Unsupported worker mode")
         finally:
             con.close()
@@ -171,6 +203,8 @@ def validate_request(vertex_count, **values):
 def remote_status():
     return {
         "engine": "duckdb-httpfs", "source": SOURCE,
+        "source_revision": SOURCE_REVISION, "source_revision_pinned": REVISION_PINNED,
+        "deep_links": "content-fingerprint checked; row position is not a mathematical class ID",
         "supported_vertex_counts": list(SUPPORTED_SHARDS),
         "single_shard_only": True,
         "dataset_complete": False,
@@ -187,6 +221,7 @@ def remote_status():
 def remote_search(
     vertex_count: int = Query(..., ge=5, le=15),
     offset: int = Query(0, ge=0, le=10_000),
+    after_row: int | None = Query(None, ge=0, le=100_000_000),
     limit: int = Query(6, ge=1, le=12),
     facet_count: int | None = Query(None, ge=0, le=1_000_000),
     point_count: int | None = Query(None, ge=0, le=1_000_000),
@@ -198,13 +233,20 @@ def remote_search(
     values = dict(facet_count=facet_count, point_count=point_count,
                   dual_point_count=dual_point_count, h11=h11, h12=h12,
                   euler_characteristic=euler_characteristic)
+    # Direct Python calls in the offline unit tests retain FastAPI Query defaults.
+    if not isinstance(after_row, int):
+        after_row = None
     validate_request(vertex_count, **values)
+    if after_row is not None and offset:
+        raise HTTPException(422, "Use either after_row or offset, not both")
     if vertex_count >= 10 and all(x is None for x in values.values()):
         raise HTTPException(422, "For shards with 10+ vertices, specify at least one numeric filter")
     data = bounded_worker({"mode": "page", "vertex_count": vertex_count,
-                           "filters": values, "offset": offset, "limit": limit})
-    return {**data, "vertex_count": vertex_count, "offset": offset, "limit": limit,
-            "source": SOURCE, "dataset_complete": False,
+                           "filters": values, "offset": offset, "after_row": after_row,
+                           "limit": limit})
+    return {**data, "vertex_count": vertex_count, "offset": offset, "after_row": after_row,
+            "limit": limit, "source": SOURCE, "source_revision": SOURCE_REVISION,
+            "source_revision_pinned": REVISION_PINNED, "dataset_complete": False,
             "identity": "(vertex_count, shard_row) within source file/revision",
             "notice": "Exact predicates in this single Parquet shard; not an all-shard catalogue search."}
 
@@ -227,17 +269,32 @@ def remote_count(
         raise HTTPException(422, "For shards with 10+ vertices, specify at least one numeric filter")
     data = bounded_worker({"mode": "count", "vertex_count": vertex_count, "filters": values})
     return {**data, "source": SOURCE, "vertex_count": vertex_count,
+            "source_revision": SOURCE_REVISION, "source_revision_pinned": REVISION_PINNED,
             "dataset_complete": False,
             "notice": "Exact count for selected shard only; not for the entire 4D catalogue."}
 
 
 @router.get("/row/{vertex_count}/{shard_row}")
 def remote_row(vertex_count: int = ApiPath(..., ge=5, le=15),
-               shard_row: int = ApiPath(..., ge=0, le=100_000_000)):
+               shard_row: int = ApiPath(..., ge=0, le=100_000_000),
+               fp: str | None = Query(None, min_length=64, max_length=64),
+               rev: str | None = Query(None, min_length=40, max_length=40)):
+    if not isinstance(fp, str):
+        fp = None
+    if not isinstance(rev, str):
+        rev = None
+    if rev is not None and (not re.fullmatch(r"[0-9a-f]{40}", rev) or rev != SOURCE_REVISION):
+        raise HTTPException(409, "This link refers to another source revision; active dataset is different")
+    if fp is not None and not re.fullmatch(r"[0-9a-f]{64}", fp):
+        raise HTTPException(422, "Invalid row fingerprint")
     data = bounded_worker({"mode": "row", "vertex_count": vertex_count, "shard_row": shard_row})
     if data.get("item") is None:
         raise HTTPException(404, "Row does not exist in the selected Parquet shard")
+    item = data["item"]
+    if fp is not None and item["fingerprint"] != fp:
+        raise HTTPException(409, "Source row changed. The stored link fingerprint no longer matches")
     return {**data, "source": SOURCE, "vertex_count": vertex_count,
+            "source_revision": SOURCE_REVISION, "source_revision_pinned": REVISION_PINNED,
             "identity": "(vertex_count, shard_row)", "dataset_complete": False}
 
 

@@ -59,3 +59,7 @@
 .cat4d-remote-count button{border:1px solid #538898;border-radius:6px;background:#113849;color:#d3fbff;cursor:pointer;padding:10px 14px;font:inherit}
 .cat4d-remote-count button:disabled{cursor:wait;opacity:.5}
 .cat4d-remote-count span[role=alert]{color:#ffbfbf}
+
+/* v0.13: readable, verifiable Parquet deep links */
+.cat4d-provenance{font-size:12px;line-height:1.6;color:#c0dde5;overflow-wrap:anywhere;margin:0 0 16px}
+.cat4d-provenance code{font-size:11px;color:#92e9f7;overflow-wrap:anywhere}
