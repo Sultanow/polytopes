@@ -21,10 +21,6 @@
 .math-primary{display:inline-flex;align-items:center;justify-content:space-between;gap:26px;min-width:194px;background:#f7f5ef;color:#494a49!important;border-radius:4px;padding:17px 21px;font-size:13px;font-weight:700}
 .math-primary:hover{background:#fff}
 .math-secondary{font-size:13px;font-weight:600;padding:14px 8px;display:inline-flex;gap:15px}
-.math-hero-team{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:38px}
-.math-hero-person{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;color:var(--math-paper)}
-.math-hero-person img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#1a1a1a;border:1px solid rgba(255,255,255,.22)}
-.math-hero-person:hover span{text-decoration:underline;text-underline-offset:4px}
 .math-hero-note{font-size:11px;margin-top:28px;color:#dedbd5;letter-spacing:.4px}.math-hero-note span{margin-right:13px;color:#fefefe}
 .math-visual{position:relative;min-height:490px;background:radial-gradient(circle at 50% 43%,#323c4b 0%,#252a31 55%,#1d2228 100%);overflow:hidden;border-radius:6px;border:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column;box-shadow:0 28px 65px rgba(0,0,0,.13)}
 .math-visual:before{content:'';pointer-events:none;position:absolute;inset:0;z-index:0;background:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:34px 34px}
@@ -51,7 +47,6 @@
 .math-team-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 .math-person{margin:0;min-width:0}.math-portrait{background:#1a1a1a;position:relative;overflow:hidden;aspect-ratio:4/4.3;border-radius:5px}
 .math-portrait img{height:100%;width:100%;object-fit:cover;display:block;filter:saturate(.55)}
-.math-portrait-index{position:absolute;top:19px;left:20px;font-size:12px;letter-spacing:1.8px;color:#fff;z-index:2}
 .math-person figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-top:15px}.math-person figcaption strong{font-size:19px;font-weight:600}.math-person figcaption span{font-size:11px;opacity:.84;text-align:right}
 .math-photo-note{margin:19px 0 0;font-size:11px;opacity:.78}
 .math-about{background:#1a1a1a;margin-top:30px;padding:85px 0 95px}
@@ -61,6 +56,26 @@
 .math-about a{font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:5px}
 .math-footer{display:flex;justify-content:space-between;gap:15px;padding-block:30px 45px;font-size:11px;color:#e1ded7;letter-spacing:.5px}
 .math-root :focus-visible{outline:2px solid white;outline-offset:5px}
+
+/* Layered author portraits: transparent visual transitions are achieved with
+   CSS masks; the source photographs remain unchanged and individually reusable. */
+.math-hero{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:22px;padding-block:68px 72px}
+.math-hero-copy{position:relative;z-index:2}
+.math-hero-stage{position:relative;isolation:isolate;height:495px;min-width:0;overflow:hidden;background:#1a1a1a}
+.math-hero-orbit{position:absolute;inset:9% 4% 14%;border:1px solid rgba(71,202,216,.18);border-radius:50%;transform:rotate(-17deg);pointer-events:none;z-index:0}
+.math-hero-orbit:after{content:'';position:absolute;inset:8% -4%;border-top:1px solid rgba(71,202,216,.12);border-radius:50%;transform:rotate(23deg)}
+.math-hero-stage:after{content:'';position:absolute;inset:auto 0 0;height:24%;background:linear-gradient(transparent,#1a1a1a 81%);z-index:5;pointer-events:none}
+.math-hero-photo{position:absolute;width:48%;height:auto;aspect-ratio:1/1;bottom:40px;pointer-events:none;-webkit-mask-image:radial-gradient(ellipse 77% 73% at 50% 43%,#000 51%,rgba(0,0,0,.92) 68%,transparent 100%);mask-image:radial-gradient(ellipse 77% 73% at 50% 43%,#000 51%,rgba(0,0,0,.92) 68%,transparent 100%)}
+.math-hero-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.math-hero-photo--eldar{left:-9%;z-index:1;transform:scale(1.03);transform-origin:center bottom}
+.math-hero-photo--malik{left:26%;z-index:3;transform:scale(1.08);transform-origin:center bottom}
+.math-hero-photo--andreas{left:61%;z-index:2;transform:scale(1.03);transform-origin:center bottom}
+.math-hero-names{position:absolute;bottom:3px;left:0;right:0;z-index:6;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;text-align:center}
+.math-hero-names a{color:#f5f4ef;font-size:14px;font-weight:600;padding:9px 4px;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.math-hero-names a:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-color:#59cbd4}
+
 @media(max-width:1000px){.math-hero{grid-template-columns:1fr;gap:40px;padding-block:65px}.math-hero-copy{max-width:770px}.math-visual{min-height:400px}.math-visual img{height:310px;min-height:260px}.math-mini-polytope{opacity:.2}}
 @media(max-width:700px){.math-container{width:calc(100% - 38px)}.math-header{height:auto;padding:16px 19px;align-items:flex-start;flex-direction:column}.math-nav{gap:17px;flex-wrap:wrap;font-size:11px}.math-nav-action{padding:9px 12px}.math-hero{padding-block:52px 64px}.math-hero h1{font-size:clamp(38px,9.2vw,65px);letter-spacing:-2px}.math-hero h1 em{letter-spacing:-2px}.math-intro{font-size:15px}.math-hero-note{margin-top:32px}.math-section{padding-block:57px 73px}.math-project-grid,.math-team-grid,.math-about-inner{grid-template-columns:1fr}.math-project-feature,.math-project-future{min-height:310px}.math-team-grid{gap:40px}.math-portrait{aspect-ratio:1/1}.math-about{padding:57px 0 67px}.math-about-inner{gap:15px}.math-footer{flex-wrap:wrap}.math-visual{min-height:340px}.math-visual img{height:270px;min-height:240px}}
+@media(max-width:1000px){.math-hero{grid-template-columns:1fr;gap:14px}.math-hero-stage{width:min(100%,680px);justify-self:center;height:440px}}
+@media(max-width:700px){.math-hero-stage{height:clamp(260px,72vw,390px)}.math-hero-photo{width:50%;bottom:26px}.math-hero-photo--eldar{left:-10%}.math-hero-photo--malik{left:25%}.math-hero-photo--andreas{left:60%}.math-hero-names a{font-size:12px;padding:6px 2px}}
 @media(prefers-reduced-motion:reduce){.math-project-feature:hover{transform:none}}

@@ -33,20 +33,18 @@ export default function MathematicsHome() {
               <a className="math-primary" href={atlas}>Explore Polytopes <span aria-hidden="true">↗</span></a>
               <a className="math-secondary" href="#about">Our approach <span aria-hidden="true">↓</span></a>
             </div>
-            <div className="math-hero-team" aria-label="Project collaborators">
-              {people.map(({ name, image }) => (
-                <a key={name} href="#team" title={`Meet ${name}`} className="math-hero-person">
-                  <img src={image} alt="" />
-                  <span>{name}</span>
-                </a>
-              ))}
-            </div>
             <div className="math-hero-note"><span>01 /</span> An evolving collection of research tools</div>
           </div>
-          <div className="math-visual" aria-label="Abstract geometric artwork">
-            <div className="math-visual-top"><span>MATHEMATICS / ART</span><span>GEOMETRY · 02—05D</span></div>
-            <img src="/hero-polytope.png" alt="Artistic illustration of a multidimensional polytope, not an exact lattice model" />
-            <div className="math-visual-bottom"><span>Structure in higher dimensions</span><span aria-hidden="true">✳</span></div>
+          <div className="math-hero-stage" aria-label="Portraits of Eldar, Malik and Andreas">
+            <div className="math-hero-orbit" aria-hidden="true" />
+            {people.map(({ name, image }) => (
+              <div className={`math-hero-photo math-hero-photo--${name.toLowerCase()}`} key={name}>
+                <img src={image} alt={`Portrait of ${name}`} />
+              </div>
+            ))}
+            <div className="math-hero-names">
+              {people.map(({ name }) => <a href="#team" key={name}>{name}</a>)}
+            </div>
           </div>
         </section>
 
@@ -66,11 +64,11 @@ export default function MathematicsHome() {
         </section>
 
         <section id="team" className="math-section math-container" aria-labelledby="math-team-title">
-          <div className="math-section-heading"><p className="math-overline">02 / THE PEOPLE</p><h2 id="math-team-title">Curiosity is collaborative.</h2><p>Three collaborators, a shared fascination for computational mathematics.</p></div>
+          <div className="math-section-heading"><p className="math-overline">THE PEOPLE</p><h2 id="math-team-title">Curiosity is collaborative.</h2><p>Three collaborators, a shared fascination for computational mathematics.</p></div>
           <div className="math-team-grid">
-            {people.map(({ name, image, caption }, index) => (
+            {people.map(({ name, image, caption }) => (
               <figure className="math-person" key={name}>
-                <div className="math-portrait"><img src={image} alt={`Portrait of ${name}`} loading="lazy" /><span className="math-portrait-index">0{index + 1}</span></div>
+                <div className="math-portrait"><img src={image} alt={`Portrait of ${name}`} loading="lazy" /></div>
                 <figcaption><strong>{name}</strong><span>{caption}</span></figcaption>
               </figure>
             ))}
