@@ -126,12 +126,8 @@ export default function MathematicsHome() {
             <img className="math-hero-ico" src={heroIcosahedron} alt="" aria-hidden="true" decoding="async" />
 
             <div className="math-hero-copy">
-              <p className="math-overline"><span className="math-dot" /> AN OPEN LAB FOR MATHEMATICAL EXPLORATION</p>
               <h1 id="math-title" className="math-wordtitle">mathematics<span className="math-wordtitle-dot">.</span>art</h1>
               <p className="math-intro">Mathematical visualization, computation, and research tools.</p>
-              <div className="math-hero-actions">
-                <a className="math-primary" href={atlas}>Explore Polytopes <span aria-hidden="true">→</span></a>
-              </div>
             </div>
 
             <div className="math-hero-stage" role="img" aria-label="Portraits of Eldar, Malik and Andreas">
