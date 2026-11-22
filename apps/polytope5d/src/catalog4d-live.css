@@ -53,3 +53,9 @@
 .cat4d-jump button:disabled{cursor:wait;opacity:.6}
 .cat4d-share{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 16px;font-size:12px;color:#b9e8ed}
 .cat4d-share a{color:#92e9f7;text-decoration:underline;text-underline-offset:3px}.cat4d-share span{overflow-wrap:anywhere}
+
+/* v0.12: exact per-shard Parquet search and explicit count operation */
+.cat4d-remote-count{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin:12px 0 20px;font-size:12px;color:#d3eef1}
+.cat4d-remote-count button{border:1px solid #538898;border-radius:6px;background:#113849;color:#d3fbff;cursor:pointer;padding:10px 14px;font:inherit}
+.cat4d-remote-count button:disabled{cursor:wait;opacity:.5}
+.cat4d-remote-count span[role=alert]{color:#ffbfbf}

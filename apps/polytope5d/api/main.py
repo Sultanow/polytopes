@@ -83,3 +83,6 @@ app.include_router(catalog3d_router)
 
 from .catalog4d_live import router as catalog4d_live_router
 app.include_router(catalog4d_live_router)
+
+from .catalog4d_remote import router as catalog4d_remote_router
+app.include_router(catalog4d_remote_router)
