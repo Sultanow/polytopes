@@ -1,3 +1,4 @@
+import Dimension3DExplorer from './Dimension3DExplorer.jsx';
 import { useEffect } from 'react';
 import FiveDApp from './App.jsx';
 import Dimension2DExplorer from './Dimension2DExplorer.jsx';
@@ -72,5 +73,5 @@ export default function DimensionPortal(){
   },[path,mathematicsHome]);
   if (mathematicsHome) return <MathematicsHome/>;
   if (legacy()) return <FiveDApp/>; // Existing deployed hostname keeps its exact behavior.
-  return <div className="portal-root"><Nav active={path}/>{path==='/5d'?<FiveDApp/>:path==='/2d'?<Dimension2DExplorer/>:path==='/3d'?<ThirdFourth dimension={3}/>:path==='/4d'?<ThirdFourth dimension={4}/>:path==='/compute'?<Compute/>:path==='/'?<Home/>:<main className="portal-content"><h1>Page not found</h1><p><a href={root}>Return to the atlas</a></p></main>}{path!=='/5d'&&<Footer/>}</div>;
+  return <div className="portal-root"><Nav active={path}/>{path==='/5d'?<FiveDApp/>:path==='/2d'?<Dimension2DExplorer/>:path==='/3d'?<Dimension3DExplorer/>:path==='/4d'?<ThirdFourth dimension={4}/>:path==='/compute'?<Compute/>:path==='/'?<Home/>:<main className="portal-content"><h1>Page not found</h1><p><a href={root}>Return to the atlas</a></p></main>}{path!=='/5d'&&<Footer/>}</div>;
 }

@@ -77,3 +77,6 @@ def detail(polytope_id: str):
     if r is None:
         raise HTTPException(status_code=404,detail="Not found")
     return enrich_detail(deserialize(r))
+
+from .catalog3d_api import router as catalog3d_router
+app.include_router(catalog3d_router)
