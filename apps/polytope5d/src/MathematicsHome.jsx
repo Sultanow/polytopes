@@ -1,4 +1,4 @@
-import '@fontsource-variable/outfit/wght.css';
+import SiteHeader from './SiteHeader.jsx';
 import './mathematics-home.css';
 
 // Imported (not in public/) so Vite emits them under /assets/ with hashed names:
@@ -16,6 +16,13 @@ import heroIcosahedron from './assets/home/hero-icosahedron.svg';
 import heroMesh from './assets/home/hero-mesh.svg';
 
 const atlas = 'https://polytopes.mathematics.art';
+const year = new Date().getFullYear();
+
+const navLinks = [
+  { key: 'polytopes', label: 'Polytopes', href: atlas },
+  { key: 'projects', label: 'Projects', href: '#projects' },
+  { key: 'about', label: 'About', href: '#about' },
+];
 
 const people = [
   { key: 'eldar', name: 'Eldar', image: eldarTeam },
@@ -101,20 +108,7 @@ function HeroOrbits() {
 export default function MathematicsHome() {
   return (
     <div className="math-root">
-      <header className="math-header">
-        <a className="math-logo" href="/" aria-label="mathematics.art – home">
-          {/* brand mark "m." (geometry of /brand/mathematics-art-mark-dark.svg, viewBox cropped to the glyph) */}
-          <svg className="math-mark" viewBox="8 19 52.5 33" aria-hidden="true" focusable="false">
-            <path d="M10 50V30A9 9 0 0 1 28 30V50M28 30A9 9 0 0 1 46 30V50" fill="none" stroke="#f5f4ef" strokeWidth="3.78" strokeLinejoin="round" />
-            <circle className="math-mark-dot" cx="55" cy="46.53" r="3.47" fill="#70dce5" />
-          </svg>
-        </a>
-        <nav className="math-nav" aria-label="Main navigation">
-          <a href={atlas}>Polytopes</a>
-          <a href="#projects">Projects</a>
-          <a href="#about">About</a>
-        </nav>
-      </header>
+      <SiteHeader links={navLinks} />
 
       <main>
         <section className="math-hero" aria-labelledby="math-title">
@@ -180,7 +174,7 @@ export default function MathematicsHome() {
         </section>
       </main>
 
-      <footer className="math-footer math-container"><span>© mathematics.art</span><span>Research · Geometry · Visualisation</span><a href="https://github.com/Sultanow/polytopes" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+      <footer className="math-footer math-container"><span>© {year} mathematics.art</span><span>Research · Geometry · Visualisation</span><a href="https://github.com/Sultanow/polytopes" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
     </div>
   );
 }

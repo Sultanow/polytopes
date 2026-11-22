@@ -7,7 +7,7 @@ import { findReflexiveSimplices, inspectSimplexWeights, toProjectionGeometry } f
 const articleUrl = 'https://www.mdpi.com/2673-9909/6/11/194';
 const MAX_RESULTS = 12;
 
-export default function App() {
+export default function App({ embedded = false }) {
   const [playing, setPlaying] = useState(true);
   const [viewMode, setViewMode] = useState('geometry');
   const [maxWeight, setMaxWeight] = useState(8);
@@ -38,12 +38,14 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="site-header">
-        <a className="brand" href="https://mathematics.art/" aria-label="mathematics.art homepage">
-          <img src="/brand/mathematics-art-logo-dark.svg" alt="mathematics.art" width="939" height="83" style={{ display: 'block', height: 23, width: 'auto' }} />
-        </a>
-        <span className="header-tag"><span className="live-dot" /> RESEARCH PREVIEW · V0.3</span>
-      </header>
+      {!embedded && (
+        <header className="site-header">
+          <a className="brand" href="https://mathematics.art/" aria-label="mathematics.art homepage">
+            <img src="/brand/mathematics-art-logo-dark.svg" alt="mathematics.art" width="939" height="83" style={{ display: 'block', height: 23, width: 'auto' }} />
+          </a>
+          <span className="header-tag"><span className="live-dot" /> RESEARCH PREVIEW · V0.3</span>
+        </header>
+      )}
 
       <main className="main-content">
         <div className="eyebrow"><span className="eyebrow-line" /> AN EXPERIMENT IN HIGHER DIMENSIONS</div>
@@ -102,7 +104,7 @@ export default function App() {
         </section>
         <CatalogueSearch />
       </main>
-      <footer className="site-footer"><span>© mathematics.art · Polytope5D</span><a href={articleUrl} target="_blank" rel="noreferrer">Research paper ↗</a></footer>
+      {!embedded && <footer className="site-footer"><span>© {new Date().getFullYear()} mathematics.art · Polytope5D</span><a href={articleUrl} target="_blank" rel="noreferrer">Research paper ↗</a></footer>}
     </div>
   );
 }

@@ -1,0 +1,34 @@
+/* Shared header: mathematics.art and polytopes.mathematics.art.
+   The bottom line runs across the full width; the content keeps a 1274px measure. */
+.ma-header{position:relative;z-index:10;height:92px;padding:0 max(48px,calc((100% - 1274px) / 2));display:flex;align-items:stretch;justify-content:space-between;gap:24px;border-bottom:1px solid rgba(255,255,255,.24);background:#1a1a1a;color:#f5f4ef;font-family:'Segoe UI',system-ui,sans-serif}
+.ma-header *{box-sizing:border-box}
+.ma-header a{color:inherit;text-decoration:none}
+.ma-header :focus-visible{outline:2px solid #fff;outline-offset:5px}
+.ma-brand{display:flex;align-items:center;gap:18px;min-width:0}
+.ma-logo{display:flex;align-items:center;padding:6px 4px 6px 0}
+.ma-mark{display:block;height:38px;width:auto;overflow:visible}
+.ma-mark-dot{transition:filter .25s}.ma-logo:hover .ma-mark-dot{filter:drop-shadow(0 0 5px rgba(112,220,229,.9))}
+/* sub-site name in the wordmark cut: Outfit Light, +0.02em */
+.ma-section{font-family:'Outfit Variable','Outfit','Segoe UI',system-ui,sans-serif;font-weight:300;letter-spacing:.02em;font-size:25px;line-height:1;padding:4px 0 6px 18px;border-left:1px solid rgba(255,255,255,.24);white-space:nowrap;transition:color .2s}
+.ma-section:hover{color:#9ff3ff}
+.ma-nav{display:flex;align-items:stretch;gap:44px;font-size:14px;font-weight:500;letter-spacing:.2px}
+.ma-nav a{position:relative;display:flex;align-items:center;white-space:nowrap;opacity:.92;transition:opacity .2s,color .2s}
+.ma-nav a:hover{opacity:1;color:#9ff3ff}
+.ma-nav a.is-active{opacity:1;color:#9ff3ff}
+.ma-nav a.is-active::after{content:'';position:absolute;left:-3px;right:-3px;bottom:-1px;height:2px;border-radius:2px;background:#33d7f0;box-shadow:0 0 12px rgba(51,215,240,.65)}
+.ma-header--section .ma-nav{gap:38px}
+
+@media(max-width:700px){
+  .ma-header{height:72px;padding:0 19px}
+  .ma-mark{height:32px}
+  .ma-brand{gap:14px}
+  .ma-section{font-size:21px;padding-left:14px}
+  .ma-nav,.ma-header--section .ma-nav{gap:18px;font-size:13px}
+}
+/* sub-site header on small phones: brand row + full-width nav row */
+@media(max-width:560px){
+  .ma-header--section{height:auto;flex-wrap:wrap;row-gap:0}
+  .ma-header--section .ma-brand{height:62px}
+  .ma-header--section .ma-nav{width:100%;height:44px;justify-content:space-between;border-top:1px solid rgba(255,255,255,.1)}
+}
+@media(prefers-reduced-motion:reduce){.ma-nav a,.ma-section,.ma-mark-dot{transition:none}}

@@ -5,6 +5,7 @@ import FiveDApp from './App.jsx';
 import Dimension2DExplorer from './Dimension2DExplorer.jsx';
 import NDPreview from './NDPreview.jsx';
 import MathematicsHome from './MathematicsHome.jsx';
+import SiteHeader from './SiteHeader.jsx';
 import './portal.css';
 
 const root = 'https://polytopes.mathematics.art';
@@ -25,13 +26,11 @@ function route() {
 function legacy() {
   return window.location.hostname==='polytope5d.mathematics.art' || window.location.pathname.startsWith('/polytope5d');
 }
+const atlasLinks = ['2d','3d','4d','5d','compute'].map(p => ({ key:`/${p}`, label:p==='compute'?'Compute':p.toUpperCase(), href:`${root}/${p}` }));
 function Nav({active}) {
-  return <nav className="portal-nav" aria-label="Polytope dimensions">
-    <a className="portal-logo" href={root+'/'}><img className="portal-logo-mark" src="/brand/mathematics-art-mark-dark.svg" alt="" width="64" height="64" />POLYTOPES<span className="portal-muted">.MATHEMATICS.ART</span></a>
-    <div className="portal-navlinks">{['2d','3d','4d','5d','compute'].map(p=><a key={p} className={active===`/${p}`?'current':''} aria-current={active===`/${p}`?'page':undefined} href={`${root}/${p}`}>{p==='compute'?'Compute':p.toUpperCase()}</a>)}</div>
-  </nav>;
+  return <SiteHeader links={atlasLinks} active={active} section={{label:'polytopes', href:root+'/'}} navLabel="Polytope dimensions" />;
 }
-function Footer(){return <footer className="portal-footer"><a href="https://mathematics.art/">← Mathematics.art</a><a href={paper} rel="noreferrer" target="_blank">5D research paper ↗</a><a href="https://github.com/Sultanow/polytopes" rel="noreferrer" target="_blank">GitHub ↗</a></footer>;}
+function Footer(){return <footer className="portal-footer"><span>© {new Date().getFullYear()} mathematics.art</span><a href="https://mathematics.art/">← Mathematics.art</a><a href={paper} rel="noreferrer" target="_blank">5D research paper ↗</a><a href="https://github.com/Sultanow/polytopes" rel="noreferrer" target="_blank">GitHub ↗</a></footer>;}
 function Home() {
   return <main className="portal-content">
     <div className="portal-overline">AN INTERACTIVE ATLAS OF REFLEXIVE LATTICE POLYTOPES</div>
@@ -74,5 +73,5 @@ export default function DimensionPortal(){
   },[path,mathematicsHome]);
   if (mathematicsHome) return <MathematicsHome/>;
   if (legacy()) return <FiveDApp/>; // Existing deployed hostname keeps its exact behavior.
-  return <div className="portal-root"><Nav active={path}/>{path==='/5d'?<FiveDApp/>:path==='/2d'?<Dimension2DExplorer/>:path==='/3d'?<Dimension3DExplorer/>:path==='/4d'?<Dimension4DLiveExplorer/>:path==='/compute'?<Compute/>:path==='/'?<Home/>:<main className="portal-content"><h1>Page not found</h1><p><a href={root}>Return to the atlas</a></p></main>}{path!=='/5d'&&<Footer/>}</div>;
+  return <div className="portal-root"><Nav active={path}/>{path==='/5d'?<FiveDApp embedded/>:path==='/2d'?<Dimension2DExplorer/>:path==='/3d'?<Dimension3DExplorer/>:path==='/4d'?<Dimension4DLiveExplorer/>:path==='/compute'?<Compute/>:path==='/'?<Home/>:<main className="portal-content"><h1>Page not found</h1><p><a href={root}>Return to the atlas</a></p></main>}<Footer/></div>;
 }

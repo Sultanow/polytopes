@@ -5,13 +5,6 @@
 .portal-root h2 {font-size:clamp(27px,3.1vw,41px);letter-spacing:-1.3px;font-weight:600;margin:0;line-height:1.2}
 .portal-root h3 {font-size:21px;letter-spacing:-.5px;font-weight:600;margin:0}
 .portal-root p {line-height:1.75}
-.portal-nav {height:78px;display:flex;align-items:center;justify-content:space-between;max-width:1360px;margin:auto;padding:0 36px;border-bottom:1px solid rgba(134,182,194,.17);gap:24px;}
-.portal-logo {white-space:nowrap;font-weight:800;font-size:15px;letter-spacing:1.3px;display:flex;align-items:center;gap:10px;color:#f2fcff;}
-.portal-mark {height:31px;width:31px;display:grid;place-items:center;border:1px solid #70dbe5;color:#effeff;border-radius:9px;font-weight:700;font-size:19px;}
-.portal-mark span {color:#81e4e7}.portal-muted {color:#89a8b6;font-size:10px;font-weight:600;letter-spacing:1px;margin-left:-6px}
-.portal-navlinks {display:flex;gap:5px;align-items:center;}
-.portal-navlinks a {font-weight:600;font-size:12px;letter-spacing:1px;color:#97b7c9;padding:9px 13px;border-radius:6px;}
-.portal-navlinks a:hover,.portal-navlinks a.current {background:#173545;color:#adf4f4;}
 .portal-content {max-width:1260px;margin:auto;padding:80px 36px 100px;}
 .portal-overline,.portal-small-label {font-size:11px;font-weight:700;letter-spacing:2px;color:#70d9e1;margin-bottom:17px;}
 .portal-content h1 {font-size:clamp(49px,6.5vw,94px);line-height:1.05;letter-spacing:-4px;font-weight:600;max-width:none;margin:11px 0 24px;}
@@ -81,7 +74,4 @@
 .portal-footer {border-top:1px solid #2c4354;max-width:1260px;margin:auto;padding:25px 36px 35px;display:flex;flex-wrap:wrap;gap:25px;color:#819eaf;font-size:12px;}
 .portal-footer a:hover {color:#9debef;}
 @media(max-width:1060px){.portal-dimension-grid {grid-template-columns:repeat(2,minmax(0,1fr));}.portal-polys-grid {grid-template-columns:repeat(4,minmax(0,1fr));}}
-@media(max-width:720px){.portal-content {padding:45px 18px 70px}.portal-nav {height:auto;min-height:75px;padding:13px 17px;flex-direction:column;gap:12px}.portal-logo {font-size:12px}.portal-navlinks {justify-content:center;flex-wrap:wrap}.portal-navlinks a {padding:7px 9px}.portal-section-title {flex-direction:column;align-items:flex-start;gap:9px}.portal-content h1 {font-size:clamp(45px,10vw,68px);letter-spacing:-2.5px}.portal-detail,.portal-chain-grid,.portal-dimension-demo {grid-template-columns:1fr}.portal-summary span {padding:14px 15px 14px 0;margin-right:12px}.portal-summary strong {font-size:21px}.portal-next-panel {border-left:0;border-top:1px solid #315064;padding:25px 0 0}.portal-pane {padding:17px}.portal-poly-tile {padding:4px}.portal-dimension-card {min-height:300px}.portal-dimension-number {font-size:64px}.portal-muted {font-size:8px}}
-
-/* v0.7e – shared mathematics.art emblem on the Polytopes atlas. */
-.portal-logo-mark { width:32px; height:32px; flex:none; display:block; }
+@media(max-width:720px){.portal-content {padding:45px 18px 70px}.portal-section-title {flex-direction:column;align-items:flex-start;gap:9px}.portal-content h1 {font-size:clamp(45px,10vw,68px);letter-spacing:-2.5px}.portal-detail,.portal-chain-grid,.portal-dimension-demo {grid-template-columns:1fr}.portal-summary span {padding:14px 15px 14px 0;margin-right:12px}.portal-summary strong {font-size:21px}.portal-next-panel {border-left:0;border-top:1px solid #315064;padding:25px 0 0}.portal-pane {padding:17px}.portal-poly-tile {padding:4px}.portal-dimension-card {min-height:300px}.portal-dimension-number {font-size:64px}}
