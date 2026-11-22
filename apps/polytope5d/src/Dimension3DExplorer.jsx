@@ -15,17 +15,23 @@ export default function Dimension3DExplorer() {
   const [offset,setOffset]=useState(0);
   const [results,setResults]=useState({items:[],total:0});
   const [selected,setSelected]=useState(null);
+  const [inclusions,setInclusions]=useState(null);
+  const [inclusionStats,setInclusionStats]=useState(null);
   const [jump,setJump]=useState('');
   const [error,setError]=useState('');
   const [loading,setLoading]=useState(false);
   const limit=24;
 
   const loadDetail=useCallback(async id=>{
-    try {setError('');setSelected(await get(`/polytopes/${id}`));}
+    try {
+      setError(''); setInclusions(null);
+      const [detail,relations]=await Promise.all([get(`/polytopes/${id}`),get(`/inclusions/${id}`)]);
+      setSelected(detail);setInclusions(relations);
+    }
     catch(e){setError(e.message);}
   },[]);
 
-  useEffect(()=>{get('/stats').then(setStats).catch(e=>setError(`3D API unavailable: ${e.message}`));},[]);
+  useEffect(()=>{get('/stats').then(setStats).catch(e=>setError(`3D API unavailable: ${e.message}`));get('/inclusions/stats').then(setInclusionStats).catch(()=>{});},[]);
   useEffect(()=>{
     let live=true;
     setLoading(true);
@@ -83,7 +89,19 @@ export default function Dimension3DExplorer() {
         <details className="cat3d-coordinates"><summary>Exact lattice coordinates, facets, and normals (JSON)</summary><pre>{JSON.stringify(selected,null,2)}</pre></details>
       </> : <p className="cat3d-muted">Choose a class above to display its actual 3D lattice geometry and polar dual.</p>}
     </section>
-    <section className="portal-pane"><h2>Inclusion families · next phase</h2><p>To certify Δᵢ ⊆ Δⱼ up to lattice equivalence, we must find an integral unimodular transformation. Inclusion cannot be inferred from two unrelated stored normal forms. This page currently shows classification and exact polar duality, not an unverified inclusion graph.</p></section>
+    <section className="portal-pane cat3d-inclusion">
+      <div className="cat3d-detail-top"><div><span className="portal-small-label">CERTIFIED INTEGER GEOMETRY</span><h2>Inclusion relations · pilot</h2></div>
+        <span className="cat3d-pill">{inclusionStats?.certified_relations ?? '—'} certificates stored</span></div>
+      <p>Every listed relation is supported by an explicit 3×3 unimodular matrix U and exact facet inequalities. This pilot checks only signed coordinate permutations (48 of infinitely many GL(3,ℤ) matrices). It is <strong>not the complete inclusion poset</strong>; absence of a result proves nothing.</p>
+      {!selected ? <p>Select a polytope to inspect its discovered inclusions.</p> : !inclusions ? <p>Loading inclusion certificates…</p> : inclusions.relations.length===0 ? <p>No certified relations have been stored for this class yet. This does not mean it is minimal or maximal.</p> : <div className="cat3d-inclusion-list">{inclusions.relations.map((rel,i)=>{
+        const other = rel.direction==='contained_in' ? rel.parent_id : rel.child_id;
+        return <article key={`${rel.child_id}-${rel.parent_id}-${i}`}>
+          <span className="cat3d-pill">{rel.direction==='contained_in'?'Δ ⊂ parent':'child ⊂ Δ'}</span>
+          <button type="button" onClick={()=>loadDetail(other)}>View polytope #{other} ↗</button>
+          <code>U = {JSON.stringify(rel.matrix)}</code>
+        </article>;
+      })}</div>}
+    </section>
     <p className="cat3d-attribution">Source: Kreuzer–Skarke 3D classification via SageMath polytopes_db. Original Sage index is zero-based. Source redistribution permissions require clarification before mirroring raw catalogue data in GitHub.</p>
   </main>;
 }

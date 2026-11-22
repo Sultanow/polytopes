@@ -1,8 +1,10 @@
 """Read-only 3D catalogue API: no public data upload or user-side computation."""
 from __future__ import annotations
+import json
 from fastapi import APIRouter, HTTPException, Query
 from .db import connect
 from .catalog3d_store import ensure_schema, expand
+from .catalog3d_inclusion import ensure_inclusion_schema
 
 router = APIRouter(prefix='/api/3d', tags=['3D'])
 
@@ -51,10 +53,34 @@ def detail(catalogue_id:int):
         raise HTTPException(404,'3D record not loaded')
     return expand(row)
 
+@router.get('/inclusions/stats')
+def inclusion_stats():
+    ensure_inclusion_schema()
+    with connect() as con:
+        checksum=con.execute("SELECT value FROM catalogue3d_provenance WHERE name='source_file_sha256'").fetchone()
+        count=con.execute('SELECT COUNT(*) FROM catalogue3d_inclusion WHERE catalogue_sha256=?',
+                          (checksum[0] if checksum else '',)).fetchone()[0]
+    return {'certified_relations':count,'method':'signed_coordinate_permutations_only',
+            'complete_poset':False,'missing_relations_are_unknown':True}
+
 @router.get('/inclusions/{catalogue_id}')
 def inclusions(catalogue_id:int):
     if not 0<=catalogue_id<=4318:
         raise HTTPException(404,'Index out of range')
-    # Important: inclusion is NOT equivalent to comparing different normal forms.
-    return {'catalogue_id':catalogue_id,'computed':False,'relations':[],
-            'reason':'Lattice embeddings (GL(3,Z)) have not yet been certified.'}
+    ensure_inclusion_schema()
+    with connect() as con:
+        checksum=con.execute("SELECT value FROM catalogue3d_provenance WHERE name='source_file_sha256'").fetchone()
+        all_rows=con.execute('SELECT child_id,parent_id,witness_matrix,method '
+                             'FROM catalogue3d_inclusion '
+                             'WHERE (child_id=? OR parent_id=?) AND catalogue_sha256=? '
+                             'ORDER BY child_id,parent_id',
+                             (catalogue_id,catalogue_id,checksum[0] if checksum else '')).fetchall()
+    relations=[]
+    for row in all_rows:
+        relations.append({'child_id':row['child_id'],'parent_id':row['parent_id'],
+                          'direction':'contained_in' if row['child_id']==catalogue_id else 'contains',
+                          'matrix':json.loads(row['witness_matrix']),
+                          'method':row['method']})
+    return {'catalogue_id':catalogue_id,'computed':len(relations)>0,
+            'complete_poset':False,'missing_relations_are_unknown':True,
+            'relations':relations}
