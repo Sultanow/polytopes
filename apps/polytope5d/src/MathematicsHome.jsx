@@ -19,7 +19,7 @@ export default function MathematicsHome() {
     <div className="math-root">
       <header className="math-header">
         <a className="math-logo" href="/" aria-label="mathematics.art homepage">
-          <img className="math-wordmark" src="/brand/mathematics-art-logo-light.svg" alt="Mathematics.art" />
+          <img className="math-wordmark" src="/brand/mathematics-art-logo-dark.svg" alt="Mathematics.art" />
         </a>
         <nav className="math-nav" aria-label="Main navigation">
           <a href={atlas}>Polytopes</a>
