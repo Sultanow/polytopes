@@ -38,3 +38,13 @@ The article classifies Newton polytopes arising from the length-six **single wei
 4. **v1.0** — Scalable indexed lookup, queue-backed heavyweight jobs, cited provenance, and download/citation per result. Never load the entire multi-billion-record catalogue into a single browser or request.
 
 **Migration note:** Paths inside legacy scripts may have assumed they were executed from the repository root. The move preserves files unchanged; adjust working directories when running older tools.
+
+## Current status (2026-11-22)
+
+- One React/Vite frontend for mathematics.art and the Polytopes Atlas (2D–5D).
+- FastAPI + persistent SQLite index; 4,319 3D reflexive classes imported separately.
+- v0.9 3D inclusion pilot: exact certificates for a partial set of relations, not the complete inclusion graph.
+
+## Deployment and server migration
+
+See [Deployment & Server Migration](docs/DEPLOYMENT.md) for installation, SQLite backup/restore, 3D catalogue import and inclusion jobs.
