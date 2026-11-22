@@ -3,15 +3,15 @@ import './mathematics-home.css';
 const atlas = 'https://polytopes.mathematics.art';
 
 const people = [
-  { key: 'eldar', name: 'Eldar', image: '/team/eldar.jpg' },
-  { key: 'malik', name: 'Malik', image: '/team/malik.jpg' },
-  { key: 'andreas', name: 'Andreas', image: '/team/andreas.jpg' },
+  { key: 'eldar', name: 'Eldar', image: '/team/eldar.png' },
+  { key: 'malik', name: 'Malik', image: '/team/malik.png' },
+  { key: 'andreas', name: 'Andreas', image: '/team/andreas.png' },
 ];
 
 const heroPeople = [
-  { key: 'malik', name: 'Malik', image: '/team/malik.jpg', className: 'math-hero-photo--left' },
-  { key: 'eldar', name: 'Eldar', image: '/team/eldar.jpg', className: 'math-hero-photo--center' },
-  { key: 'andreas', name: 'Andreas', image: '/team/andreas.jpg', className: 'math-hero-photo--right' },
+  { key: 'malik', name: 'Malik', image: '/team/malik.png', className: 'math-hero-photo--left' },
+  { key: 'eldar', name: 'Eldar', image: '/team/eldar.png', className: 'math-hero-photo--center' },
+  { key: 'andreas', name: 'Andreas', image: '/team/andreas.png', className: 'math-hero-photo--right' },
 ];
 
 export default function MathematicsHome() {
@@ -19,7 +19,7 @@ export default function MathematicsHome() {
     <div className="math-root">
       <header className="math-header">
         <a className="math-logo" href="/" aria-label="mathematics.art homepage">
-          <img className="math-logo-svg" src="/brand/mathematics-art-logo-dark.svg" alt="mathematics.art" width="939" height="83" />
+          <img className="math-wordmark" src="/brand/mathematics-art-logo-light.svg" alt="Mathematics.art" />
         </a>
         <nav className="math-nav" aria-label="Main navigation">
           <a href="#projects">Projects</a>
