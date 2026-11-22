@@ -17,3 +17,10 @@
 .cat4d-detail details{margin-top:20px}.cat4d-detail summary{cursor:pointer;color:#9ce9f6}.cat4d-detail pre{max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#09121c;padding:15px;border:1px solid #284455;font-size:12px}
 @media(max-width:950px){.cat4d-search form{grid-template-columns:repeat(3,1fr)}.cat4d-items{grid-template-columns:repeat(2,1fr)}.cat4d-numbers{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:620px){.cat4d-metrics,.cat4d-items{grid-template-columns:1fr}.cat4d-search form{grid-template-columns:repeat(2,1fr)}.cat4d-numbers{grid-template-columns:repeat(2,1fr)}.cat4d-planes{grid-template-columns:repeat(2,1fr)}.cat4d-form-actions{grid-column:1/-1;justify-content:stretch}.cat4d-form-actions button{flex:1}}
+
+/* Certified 4D wireframe overlay controls (v0.10b). */
+.cat4d-visual-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.cat4d-visual-actions label{display:flex;align-items:center;gap:6px;font-size:12px;color:#cde9ee;cursor:pointer}
+.cat4d-visual-actions input{accent-color:#45cfe3}
+.cat4d-visual-actions input:disabled{cursor:not-allowed}
+@media(max-width:620px){.cat4d-preview-title{gap:10px;flex-wrap:wrap}.cat4d-visual-actions{gap:10px}}
